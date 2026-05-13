@@ -2630,6 +2630,14 @@ function shareTask(taskId) {
   }).catch(() => showToast('שגיאה ביצירת קישור', 'error'));
 }
 
+function shareFixedTask(ftId) {
+  const ft = state.fixedTasks.find(f => f.id === ftId);
+  if(!ft) return;
+  const recLabel = getRecurrenceLabel(ft);
+  const waText = `📌 *משימה קבועה מתוכנית עבודה*\n*${ft.title}*${ft.description ? '\n' + ft.description : ''}\n🔁 ${recLabel}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, '_blank');
+}
+
 function importSharedTask(shareId) {
   if(!state.firebase) return;
   state.firebase.collection('sharedTasks').doc(shareId).get().then(doc => {
@@ -3003,7 +3011,7 @@ function renderTaskCard(task, dateKey) {
         ${clsBadge}${fixedBadge}
       </div>
       <div class="task-actions">
-        ${!task.isFixed ? `<button class="task-action-btn" onclick="shareTask('${task.id}')" title="שתף משימה">🔗</button>` : ''}
+        ${!task.isFixed ? `<button class="task-action-btn" onclick="shareTask('${task.id}')" title="שתף ב-WhatsApp">🔗</button>` : `<button class="task-action-btn" onclick="shareFixedTask('${task.origId||task.id}')" title="שתף ב-WhatsApp">🔗</button>`}
         ${!task.isFixed ? `<button class="task-action-btn" onclick="openEditTask('${task.id}')" title="עריכה">✏️</button>` : ''}
         ${!task.isFixed ? `<button class="task-action-btn delete" onclick="confirmDeleteTask('${task.id}')" title="מחיקה">🗑️</button>` : ''}
       </div>
@@ -3154,6 +3162,7 @@ function renderFixedTasksList() {
           <div class="fixed-task-item-sub">${clsBadge}${getRecurrenceLabel(ft)}</div>
         </div>
         <div class="fixed-task-actions">
+          <button class="task-action-btn" onclick="shareFixedTask('${ft.id}')" title="שתף ב-WhatsApp">🔗</button>
           <button class="task-action-btn" onclick="editFixedTask('${ft.id}')" title="ערוך">✏️</button>
           <button class="task-action-btn delete" onclick="deleteFixedTask('${ft.id}');renderFixedTasksList()">🗑️</button>
         </div>
