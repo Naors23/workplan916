@@ -1915,6 +1915,7 @@ let state = {
   connected: false,
   currentUser: null,
   currentUnit: null,
+  editingEventId: null,
   firestoreUnsubscribe: null,
   events: [],
   searchQuery: '',
@@ -2223,12 +2224,30 @@ function moveTaskToDate(taskId, newDate) {
 const EVENT_COLORS = ['#3B82F6','#8B5CF6','#EC4899','#EF4444','#10B981','#F59E0B','#0EA5E9','#6366F1'];
 
 function openAddEvent(dateStr) {
+  state.editingEventId = null;
   document.getElementById('event-date-input').value = dateStr || formatDate(new Date());
   document.getElementById('event-end-date-input').value = '';
   document.getElementById('event-title-input').value = '';
   document.getElementById('event-yearly-cb').checked = false;
   document.getElementById('event-date-warning').style.display = 'none';
+  document.querySelector('#event-modal-overlay .modal-header h2').textContent = '🗓️ הוסף אירוע';
   state.eventSelectedColor = EVENT_COLORS[0];
+  buildEventColorPicker();
+  openModal('event-modal-overlay');
+  setTimeout(() => document.getElementById('event-title-input').focus(), 100);
+}
+
+function editEvent(id) {
+  const ev = (state.events||[]).find(e => e.id === id);
+  if(!ev) return;
+  state.editingEventId = id;
+  document.getElementById('event-title-input').value = ev.title || '';
+  document.getElementById('event-date-input').value = ev.startDate || ev.date || '';
+  document.getElementById('event-end-date-input').value = ev.endDate !== (ev.startDate||ev.date) ? (ev.endDate||'') : '';
+  document.getElementById('event-yearly-cb').checked = !!ev.repeatYearly;
+  document.getElementById('event-date-warning').style.display = 'none';
+  document.querySelector('#event-modal-overlay .modal-header h2').textContent = '🗓️ עריכת אירוע';
+  state.eventSelectedColor = ev.color || EVENT_COLORS[0];
   buildEventColorPicker();
   openModal('event-modal-overlay');
   setTimeout(() => document.getElementById('event-title-input').focus(), 100);
@@ -2262,21 +2281,20 @@ function saveEvent() {
   const yearly = document.getElementById('event-yearly-cb').checked;
   if(!title || !startDate) { showToast('נא למלא כותרת ותאריך התחלה', 'error'); return; }
   if(endDate && endDate < startDate) { showToast('תאריך הסיום חייב להיות אחרי ההתחלה', 'error'); return; }
-  const ev = {
-    id: uuid(), title,
-    date: startDate, startDate,
-    endDate: endDate || startDate,
-    color: state.eventSelectedColor || EVENT_COLORS[0],
-    repeatYearly: yearly,
-    createdAt: new Date().toISOString()
-  };
   if(!state.events) state.events = [];
-  state.events.push(ev);
-  saveLocal();
-  syncToFirebase();
-  render();
+  if(state.editingEventId) {
+    const idx = state.events.findIndex(e => e.id === state.editingEventId);
+    if(idx !== -1) {
+      state.events[idx] = { ...state.events[idx], title, date: startDate, startDate, endDate: endDate || startDate, color: state.eventSelectedColor || EVENT_COLORS[0], repeatYearly: yearly };
+    }
+    state.editingEventId = null;
+    showToast('האירוע עודכן', 'success');
+  } else {
+    state.events.push({ id: uuid(), title, date: startDate, startDate, endDate: endDate || startDate, color: state.eventSelectedColor || EVENT_COLORS[0], repeatYearly: yearly, createdAt: new Date().toISOString() });
+    showToast('האירוע נוסף', 'success');
+  }
+  saveLocal(); syncToFirebase(); render();
   closeModal('event-modal-overlay');
-  showToast('האירוע נוסף', 'success');
 }
 
 function eventCoversDay(e, dk) {
@@ -2968,7 +2986,7 @@ function renderDayColumn(day) {
       const isStart = isEventStart(e, dk);
       const hasRange = (e.endDate && e.endDate !== e.startDate) || (e.repeatYearly && e.endDate && e.endDate.slice(5) !== (e.startDate||e.date).slice(5));
       const continueBadge = hasRange && !isStart ? `<span style="opacity:0.7;font-size:0.7rem;">↔</span>` : '';
-      return `<span class="event-pill" style="background:${e.color||'#3B82F6'}">${continueBadge}🗓️ ${escHtml(e.title)}${isStart ? `<button class="delete-event-btn" onclick="deleteEvent('${e.id}')" title="מחק אירוע">✕</button>` : ''}</span>`;
+      return `<span class="event-pill" style="background:${e.color||'#3B82F6'}">${continueBadge}🗓️ ${escHtml(e.title)}${isStart ? `<button class="delete-event-btn" onclick="editEvent('${e.id}')" title="ערוך אירוע" style="margin-left:2px;">✏️</button><button class="delete-event-btn" onclick="deleteEvent('${e.id}')" title="מחק אירוע">✕</button>` : ''}</span>`;
     })
   ].join('');
 
