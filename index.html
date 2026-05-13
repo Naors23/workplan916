@@ -1390,6 +1390,16 @@
     }
     .done-btn:hover { border-color: #10B981; background: #D1FAE5; }
     .done-btn.checked { background: #10B981; border-color: #10B981; color: white; }
+
+    .unit-card {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 16px 10px; border-radius: 14px; border: 2px solid #E2E8F0;
+      cursor: pointer; transition: all 0.15s; background: #F8FAFC;
+    }
+    .unit-card:hover { border-color: #C9A84C; background: #FFFBEB; transform: translateY(-2px); }
+    .unit-card.selected { border-color: #0A2647; background: #EFF6FF; }
+    .unit-card img { width: 64px; height: 64px; object-fit: contain; }
+    .unit-card span { font-size: 0.82rem; font-weight: 700; color: #0A2647; text-align: center; }
   </style>
 </head>
 <body>
@@ -1485,16 +1495,69 @@
 <!-- Loading bar -->
 <div class="loading-bar" id="loading-bar" style="display:none"></div>
 
+<!-- ======================== UNIT SELECTOR MODAL ======================== -->
+<div id="unit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:3000;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:20px;padding:28px 24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;direction:rtl;text-align:right;">
+    <h2 style="font-size:1.2rem;font-weight:800;color:#0A2647;margin:0 0 6px;">ברוך הבא!</h2>
+    <p style="font-size:0.88rem;color:#64748B;margin:0 0 20px;">בחר את היחידה שלך — תוכל לשנות בהמשך</p>
+    <div id="unit-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div class="unit-card" onclick="selectUnit('אשדוד')" data-unit="אשדוד">
+        <img src="icons/אשדוד.png" alt="אשדוד">
+        <span>בסיס אשדוד</span>
+      </div>
+      <div class="unit-card" onclick="selectUnit('קריה')" data-unit="קריה">
+        <img src="icons/בסיס קריה.png" alt="קריה">
+        <span>בסיס הקריה</span>
+      </div>
+      <div class="unit-card" onclick="selectUnit('בח')" data-unit="בח">
+        <img src="icons/חיפה.png" alt="בח">
+        <span>בסיס חיפה (ב"ח)</span>
+      </div>
+      <div class="unit-card" onclick="selectUnit('זירת ים סוף')" data-unit="זירת ים סוף">
+        <img src="icons/זירת ם סוף.png" alt="זירת ים סוף">
+        <span>זירת ים סוף</span>
+      </div>
+      <div class="unit-card" onclick="selectUnit('עתלית')" data-unit="עתלית">
+        <img src="icons/עתלית.png" alt="עתלית">
+        <span>בסיס עתלית</span>
+      </div>
+      <div class="unit-card" onclick="selectUnit('מספנה')" data-unit="מספנה">
+        <img src="icons/מספנה.png" alt="מספנה">
+        <span>מספנה</span>
+      </div>
+      <div class="unit-card" onclick="selectUnit('בהד')" data-unit="בהד" style="grid-column:span 2;max-width:200px;margin:0 auto;width:100%;">
+        <img src="icons/בהד חיל הים.png" alt="בהד">
+        <span>בה"ד חיל הים</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SUBTITLE EDIT MODAL ======================== -->
+<div id="subtitle-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:3000;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:16px;padding:24px;max-width:360px;width:100%;direction:rtl;">
+    <h3 style="margin:0 0 14px;color:#0A2647;font-size:1rem;">ערוך כיתוב כותרת</h3>
+    <input id="subtitle-input" type="text" placeholder="לדוגמה: מחלקת לוגיסטיקה" style="width:100%;padding:10px 12px;border:1.5px solid #CBD5E1;border-radius:10px;font-size:0.95rem;direction:rtl;box-sizing:border-box;font-family:inherit;">
+    <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end;">
+      <button onclick="cancelEditSubtitle()" style="padding:8px 18px;border-radius:10px;border:1.5px solid #CBD5E1;background:white;cursor:pointer;font-size:0.88rem;">ביטול</button>
+      <button onclick="saveSubtitle()" style="padding:8px 18px;border-radius:10px;border:none;background:#0A2647;color:white;cursor:pointer;font-size:0.88rem;font-weight:700;">שמור</button>
+    </div>
+  </div>
+</div>
+
 <!-- ======================== HEADER ======================== -->
 <header id="app-header">
   <div class="header-main">
     <div class="logo-area">
-      <img class="logo-img logo-916" src="https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png" alt="חיל הים">
+      <img id="logo-left" class="logo-img logo-916" src="https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png" alt="לוגו שמאל">
       <div class="logo-text">
         <h1>תוכנית עבודה</h1>
-        <p>פלגת 916 &nbsp;|&nbsp; בסיס אשדוד</p>
+        <p id="logo-subtitle" style="display:flex;align-items:center;gap:4px;">
+          <span id="subtitle-text">פלגת 916 &nbsp;|&nbsp; בסיס אשדוד</span>
+          <button id="subtitle-edit-btn" onclick="startEditSubtitle()" title="ערוך כיתוב" style="background:none;border:none;cursor:pointer;font-size:0.8rem;padding:0 2px;opacity:0.6;color:white;line-height:1;">✏️</button>
+        </p>
       </div>
-      <img class="logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/IN_Ashdod_Tag.svg/960px-IN_Ashdod_Tag.svg.png" alt="בסיס אשדוד">
+      <img id="logo-right" class="logo-img" src="icons/אשדוד.png" alt="לוגו יחידה">
     </div>
 
     <div class="header-center">
@@ -1834,6 +1897,7 @@ let state = {
   syncCode: null,
   connected: false,
   currentUser: null,
+  currentUnit: null,
   firestoreUnsubscribe: null,
   events: [],
   searchQuery: '',
@@ -2325,16 +2389,20 @@ function handleAuthStateChange(user) {
       document.getElementById('btn-admin').style.display = 'flex';
     }
 
-    // Update header subtitle and logos based on user
-    const subtitle = document.querySelector('.logo-text p');
-    const navyLogo = document.querySelector('.logo-img.logo-916');
-    if(user.email !== ADMIN_EMAIL) {
-      if(subtitle) subtitle.textContent = 'בסיס אשדוד';
-      if(navyLogo) navyLogo.style.display = 'none';
-    }
-
     // Save user profile to Firestore
     saveUserProfile(user);
+
+    // Load unit preference
+    if(state.firebase) {
+      state.firebase.collection('users').doc(user.uid).get().then(doc => {
+        const data = doc.data() || {};
+        if(data.unit) {
+          applyUnit(data.unit, data.customSubtitle || UNITS[data.unit]?.label || '');
+        } else {
+          showUnitSelector();
+        }
+      }).catch(() => showUnitSelector());
+    }
 
     // Setup listener for this user's data
     setupFirebaseListener();
@@ -2361,6 +2429,93 @@ function saveUserProfile(user) {
     photoURL: user.photoURL || '',
     lastLogin: new Date().toISOString()
   }, { merge: true }).catch(()=>{});
+}
+
+// ============================================================
+// UNIT SYSTEM
+// ============================================================
+const UNITS = {
+  'אשדוד':       { label: 'בסיס אשדוד',    rightLogo: 'icons/אשדוד.png',         leftLogo: null },
+  'קריה':        { label: 'בסיס הקריה',    rightLogo: 'icons/בסיס קריה.png',     leftLogo: 'icons/חיל הים.png' },
+  'בח':          { label: 'בסיס חיפה',     rightLogo: 'icons/חיפה.png',           leftLogo: 'icons/חיל הים.png' },
+  'זירת ים סוף':{ label: 'זירת ים סוף',   rightLogo: 'icons/זירת ם סוף.png',    leftLogo: 'icons/חיל הים.png' },
+  'עתלית':       { label: 'בסיס עתלית',    rightLogo: 'icons/עתלית.png',          leftLogo: 'icons/חיל הים.png' },
+  'מספנה':       { label: 'מספנה',         rightLogo: 'icons/מספנה.png',          leftLogo: 'icons/חיל הים.png' },
+  'בהד':         { label: 'בה"ד חיל הים',  rightLogo: 'icons/בהד חיל הים.png',   leftLogo: 'icons/חיל הים.png' },
+};
+
+function showUnitSelector() {
+  const modal = document.getElementById('unit-modal');
+  modal.style.display = 'flex';
+}
+
+function selectUnit(unitKey) {
+  document.querySelectorAll('.unit-card').forEach(c => c.classList.remove('selected'));
+  const card = document.querySelector(`.unit-card[data-unit="${unitKey}"]`);
+  if(card) card.classList.add('selected');
+
+  const unit = UNITS[unitKey];
+  if(!unit) return;
+
+  // Close modal
+  document.getElementById('unit-modal').style.display = 'none';
+
+  // Apply logos and subtitle
+  applyUnit(unitKey, unit.label);
+
+  // Save to Firestore
+  if(state.firebase && state.currentUser) {
+    state.firebase.collection('users').doc(state.currentUser.uid).set({
+      unit: unitKey,
+      customSubtitle: unit.label
+    }, { merge: true }).catch(()=>{});
+  }
+}
+
+function applyUnit(unitKey, customSubtitle) {
+  const unit = UNITS[unitKey];
+  if(!unit) return;
+
+  const logoLeft = document.getElementById('logo-left');
+  const logoRight = document.getElementById('logo-right');
+  const subtitleText = document.getElementById('subtitle-text');
+
+  if(logoRight) logoRight.src = unit.rightLogo;
+
+  if(unit.leftLogo) {
+    if(logoLeft) { logoLeft.src = unit.leftLogo; logoLeft.style.display = ''; }
+  } else {
+    // אשדוד — שמור לוגו 916 המקורי
+    if(logoLeft) logoLeft.src = 'https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png';
+  }
+
+  if(subtitleText && customSubtitle) subtitleText.innerHTML = customSubtitle;
+  state.currentUnit = unitKey;
+}
+
+// Subtitle edit
+function startEditSubtitle() {
+  const current = document.getElementById('subtitle-text')?.textContent || '';
+  document.getElementById('subtitle-input').value = current.trim();
+  document.getElementById('subtitle-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('subtitle-input').focus(), 100);
+}
+
+function cancelEditSubtitle() {
+  document.getElementById('subtitle-modal').style.display = 'none';
+}
+
+function saveSubtitle() {
+  const val = document.getElementById('subtitle-input').value.trim();
+  if(!val) return;
+  document.getElementById('subtitle-text').textContent = val;
+  document.getElementById('subtitle-modal').style.display = 'none';
+  if(state.firebase && state.currentUser) {
+    state.firebase.collection('users').doc(state.currentUser.uid).set({
+      customSubtitle: val
+    }, { merge: true }).catch(()=>{});
+  }
+  showToast('כיתוב עודכן', 'success');
 }
 
 function setupFirebaseListener() {
@@ -2463,10 +2618,9 @@ function shareTask(taskId) {
   const shareData = { ...task, sharedBy: state.currentUser?.email || '', sharedAt: new Date().toISOString() };
   state.firebase.collection('sharedTasks').doc(shareId).set(shareData).then(() => {
     const url = `${location.origin}${location.pathname}?import=${shareId}`;
-    navigator.clipboard.writeText(url).then(() => showToast('קישור הועתק ללוח!', 'success'))
-      .catch(() => {
-        prompt('העתק את הקישור:', url);
-      });
+    const waText = `📋 *משימה מתוכנית עבודה*\n*${task.title}*${task.description ? '\n' + task.description : ''}\n\n🔗 לייבוא המשימה:\n${url}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+    window.open(waUrl, '_blank');
   }).catch(() => showToast('שגיאה ביצירת קישור', 'error'));
 }
 
