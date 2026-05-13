@@ -1552,9 +1552,11 @@
       <img id="logo-left" class="logo-img logo-916" src="https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png" alt="לוגו שמאל">
       <div class="logo-text">
         <h1>תוכנית עבודה</h1>
-        <p id="logo-subtitle" style="display:flex;align-items:center;gap:4px;">
-          <span id="subtitle-text">פלגת 916 &nbsp;|&nbsp; בסיס אשדוד</span>
-          <button id="subtitle-edit-btn" onclick="startEditSubtitle()" title="ערוך כיתוב" style="background:none;border:none;cursor:pointer;font-size:0.8rem;padding:0 2px;opacity:0.6;color:white;line-height:1;">✏️</button>
+        <p id="logo-subtitle" style="display:flex;align-items:center;gap:4px;flex-wrap:nowrap;">
+          <button id="subtitle-edit-btn" onclick="startEditSubtitle()" title="ערוך מחלקה" style="background:none;border:none;cursor:pointer;font-size:0.75rem;padding:0;opacity:0.65;color:white;line-height:1;flex-shrink:0;">✏️</button>
+          <span id="subtitle-custom">פלגת 916</span>
+          <span style="opacity:0.6;">&nbsp;|&nbsp;</span>
+          <span id="subtitle-unit">בסיס אשדוד</span>
         </p>
       </div>
       <img id="logo-right" class="logo-img" src="icons/אשדוד.png" alt="לוגו יחידה">
@@ -2397,11 +2399,12 @@ function handleAuthStateChange(user) {
       state.firebase.collection('users').doc(user.uid).get().then(doc => {
         const data = doc.data() || {};
         if(data.unit) {
-          applyUnit(data.unit, data.customSubtitle || UNITS[data.unit]?.label || '');
+          applyUnit(data.unit, data.customSubtitle || 'פלגת 916');
         } else {
+          applyUnit('אשדוד', 'פלגת 916');
           showUnitSelector();
         }
-      }).catch(() => showUnitSelector());
+      }).catch(() => { applyUnit('אשדוד', 'פלגת 916'); showUnitSelector(); });
     }
 
     // Setup listener for this user's data
@@ -2435,7 +2438,7 @@ function saveUserProfile(user) {
 // UNIT SYSTEM
 // ============================================================
 const UNITS = {
-  'אשדוד':       { label: 'בסיס אשדוד',    rightLogo: 'icons/אשדוד.png',         leftLogo: null },
+  'אשדוד':       { label: 'בסיס אשדוד',    rightLogo: 'icons/אשדוד.png',         leftLogo: 'icons/חיל הים.png' },
   'קריה':        { label: 'בסיס הקריה',    rightLogo: 'icons/בסיס קריה.png',     leftLogo: 'icons/חיל הים.png' },
   'בח':          { label: 'בסיס חיפה',     rightLogo: 'icons/חיפה.png',           leftLogo: 'icons/חיל הים.png' },
   'זירת ים סוף':{ label: 'זירת ים סוף',   rightLogo: 'icons/זירת ם סוף.png',    leftLogo: 'icons/חיל הים.png' },
@@ -2472,30 +2475,33 @@ function selectUnit(unitKey) {
   }
 }
 
-function applyUnit(unitKey, customSubtitle) {
+function applyUnit(unitKey, customText) {
   const unit = UNITS[unitKey];
   if(!unit) return;
 
-  const logoLeft = document.getElementById('logo-left');
+  const logoLeft  = document.getElementById('logo-left');
   const logoRight = document.getElementById('logo-right');
-  const subtitleText = document.getElementById('subtitle-text');
+  const unitSpan  = document.getElementById('subtitle-unit');
+  const customSpan = document.getElementById('subtitle-custom');
 
   if(logoRight) logoRight.src = unit.rightLogo;
 
-  if(unit.leftLogo) {
-    if(logoLeft) { logoLeft.src = unit.leftLogo; logoLeft.style.display = ''; }
-  } else {
-    // אשדוד — שמור לוגו 916 המקורי
-    if(logoLeft) logoLeft.src = 'https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png';
+  // לוגו שמאל: 916 רק לאדמין, לכולם חיל הים
+  if(logoLeft) {
+    const isAdmin = state.currentUser?.email === ADMIN_EMAIL;
+    logoLeft.src = isAdmin
+      ? 'https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png'
+      : unit.leftLogo;
   }
 
-  if(subtitleText && customSubtitle) subtitleText.innerHTML = customSubtitle;
+  if(unitSpan) unitSpan.textContent = unit.label;
+  if(customSpan && customText) customSpan.textContent = customText;
   state.currentUnit = unitKey;
 }
 
-// Subtitle edit
+// Subtitle edit (only the custom part — e.g. "פלגת 916")
 function startEditSubtitle() {
-  const current = document.getElementById('subtitle-text')?.textContent || '';
+  const current = document.getElementById('subtitle-custom')?.textContent || '';
   document.getElementById('subtitle-input').value = current.trim();
   document.getElementById('subtitle-modal').style.display = 'flex';
   setTimeout(() => document.getElementById('subtitle-input').focus(), 100);
@@ -2508,7 +2514,7 @@ function cancelEditSubtitle() {
 function saveSubtitle() {
   const val = document.getElementById('subtitle-input').value.trim();
   if(!val) return;
-  document.getElementById('subtitle-text').textContent = val;
+  document.getElementById('subtitle-custom').textContent = val;
   document.getElementById('subtitle-modal').style.display = 'none';
   if(state.firebase && state.currentUser) {
     state.firebase.collection('users').doc(state.currentUser.uid).set({
