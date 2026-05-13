@@ -1390,6 +1390,21 @@
     }
     .done-btn:hover { border-color: #10B981; background: #D1FAE5; }
     .done-btn.checked { background: #10B981; border-color: #10B981; color: white; }
+    .notdone-btn {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-300);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+    }
+    .notdone-btn:hover { border-color: #EF4444; background: #FEE2E2; }
+    .notdone-btn.checked { background: #EF4444; border-color: #EF4444; color: white; }
+    .task-card.not-done { opacity: 0.7; }
+    .task-card.not-done .task-title { text-decoration: line-through; color: #EF4444; }
 
     .unit-card {
       display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -1913,6 +1928,7 @@ function saveLocal() {
   localStorage.setItem('wp_tasks', JSON.stringify(state.tasks));
   localStorage.setItem('wp_fixed', JSON.stringify(state.fixedTasks));
   localStorage.setItem('wp_completed', JSON.stringify(state.completedInstances||[]));
+  localStorage.setItem('wp_notdone', JSON.stringify(state.notDoneInstances||[]));
   localStorage.setItem('wp_events', JSON.stringify(state.events||[]));
   localStorage.setItem('wp_sync_code', state.syncCode || '');
 }
@@ -1922,6 +1938,7 @@ function loadLocal() {
     state.tasks = JSON.parse(localStorage.getItem('wp_tasks') || '[]');
     state.fixedTasks = JSON.parse(localStorage.getItem('wp_fixed') || '[]');
     state.completedInstances = JSON.parse(localStorage.getItem('wp_completed') || '[]');
+    state.notDoneInstances = JSON.parse(localStorage.getItem('wp_notdone') || '[]');
     state.events = JSON.parse(localStorage.getItem('wp_events') || '[]');
     // syncCode set by auth handler, not hardcoded here
   } catch(e) {
@@ -2545,6 +2562,7 @@ function setupFirebaseListener() {
       if(data.tasks) state.tasks = data.tasks;
       if(data.fixedTasks) state.fixedTasks = data.fixedTasks;
       if(data.completedInstances) state.completedInstances = data.completedInstances;
+      if(data.notDoneInstances) state.notDoneInstances = data.notDoneInstances;
       if(data.events) state.events = data.events;
       saveLocal();
       render();
@@ -2564,6 +2582,7 @@ function refreshFromFirebase() {
       if(data.tasks) state.tasks = data.tasks;
       if(data.fixedTasks) state.fixedTasks = data.fixedTasks;
       if(data.completedInstances) state.completedInstances = data.completedInstances;
+      if(data.notDoneInstances) state.notDoneInstances = data.notDoneInstances;
       if(data.events) state.events = data.events;
       saveLocal();
       render();
@@ -2579,7 +2598,7 @@ document.addEventListener('visibilitychange', () => {
 function syncToFirebase() {
   if(!state.firebase || !state.syncCode) return;
   const docRef = state.firebase.collection('workplans').doc(state.syncCode);
-  docRef.set({ tasks: state.tasks, fixedTasks: state.fixedTasks, completedInstances: state.completedInstances || [], events: state.events || [], updatedAt: new Date().toISOString() })
+  docRef.set({ tasks: state.tasks, fixedTasks: state.fixedTasks, completedInstances: state.completedInstances || [], notDoneInstances: state.notDoneInstances || [], events: state.events || [], updatedAt: new Date().toISOString() })
     .catch(e => console.warn('Sync error:', e));
 }
 
@@ -2985,37 +3004,65 @@ function isTaskDone(task, dateKey) {
   return task.completed === true;
 }
 
+function isTaskNotDone(task, dateKey) {
+  if(task.isFixed) return (state.notDoneInstances||[]).includes(`${task.origId}_${dateKey}`);
+  return task.notDone === true;
+}
+
 function toggleTaskDone(taskId, dateKey, isFixed, origId) {
   if(isFixed) {
     const key = `${origId}_${dateKey}`;
     if(!state.completedInstances) state.completedInstances = [];
     if(state.completedInstances.includes(key))
       state.completedInstances = state.completedInstances.filter(k=>k!==key);
-    else
+    else {
       state.completedInstances.push(key);
+      // הסר לא בוצע אם קיים
+      state.notDoneInstances = (state.notDoneInstances||[]).filter(k=>k!==key);
+    }
   } else {
     const task = state.tasks.find(t=>t.id===taskId);
-    if(task) task.completed = !task.completed;
+    if(task) { task.completed = !task.completed; if(task.completed) task.notDone = false; }
   }
-  saveLocal();
-  syncToFirebase();
-  render();
+  saveLocal(); syncToFirebase(); render();
+}
+
+function toggleTaskNotDone(taskId, dateKey, isFixed, origId) {
+  if(isFixed) {
+    const key = `${origId}_${dateKey}`;
+    if(!state.notDoneInstances) state.notDoneInstances = [];
+    if(state.notDoneInstances.includes(key))
+      state.notDoneInstances = state.notDoneInstances.filter(k=>k!==key);
+    else {
+      state.notDoneInstances.push(key);
+      state.completedInstances = (state.completedInstances||[]).filter(k=>k!==key);
+    }
+  } else {
+    const task = state.tasks.find(t=>t.id===taskId);
+    if(task) { task.notDone = !task.notDone; if(task.notDone) task.completed = false; }
+  }
+  saveLocal(); syncToFirebase(); render();
 }
 
 function renderTaskCard(task, dateKey) {
   const priorityCls = task.priority==='high' ? ' priority-high' : task.priority==='low' ? ' priority-low' : '';
   const done = isTaskDone(task, dateKey);
+  const notDone = isTaskNotDone(task, dateKey);
   const fixedBadge = task.isFixed ? '<span class="task-badge">📌 קבועה</span>' : '';
   const clsColor = task.classification ? (CLASSIFICATION_COLORS[task.classification] || '#64748B') : null;
   const clsBadge = task.classification ? `<span class="task-badge" style="background:${clsColor};color:white;">${task.classification}</span>` : '';
   const toggleCall = `toggleTaskDone('${task.id}','${dateKey}',${!!task.isFixed},'${task.origId||''}')`;
+  const toggleNotDoneCall = `toggleTaskNotDone('${task.id}','${dateKey}',${!!task.isFixed},'${task.origId||''}')`;
   return `
-    <div class="task-card${task.isFixed?' fixed-task':''}${priorityCls}${done?' done':''}"
+    <div class="task-card${task.isFixed?' fixed-task':''}${priorityCls}${done?' done':''}${notDone?' not-done':''}"
          style="border-right-color:${task.color||DEFAULT_COLOR}"
          draggable="true"
          data-task-id="${task.id}"
          ondragstart="handleDragStart(event,'${task.id}')">
-      <button class="done-btn${done?' checked':''}" onclick="${toggleCall}" title="${done?'סמן כלא בוצע':'סמן כבוצע'}">${done?'✓':''}</button>
+      <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0;">
+        <button class="done-btn${done?' checked':''}" onclick="${toggleCall}" title="בוצע">${done?'✓':''}</button>
+        <button class="notdone-btn${notDone?' checked':''}" onclick="${toggleNotDoneCall}" title="לא בוצע">${notDone?'✗':''}</button>
+      </div>
       <div class="task-body">
         <div class="task-title">${escHtml(task.title)}</div>
         ${task.description ? `<div class="task-desc">${escHtml(task.description)}</div>` : ''}
