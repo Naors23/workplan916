@@ -1391,6 +1391,12 @@
 </head>
 <body>
 
+<!-- Update banner -->
+<div id="update-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0A2647;color:white;padding:12px 20px;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.35);z-index:9999;display:none;align-items:center;gap:12px;font-family:inherit;font-size:0.9rem;border:1.5px solid #C9A84C;direction:rtl;">
+  <span>🔄 יש גרסה חדשה!</span>
+  <button onclick="location.reload()" style="background:#C9A84C;color:#0A2647;border:none;border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.85rem;">עדכן עכשיו</button>
+</div>
+
 <!-- ======================== LOCK SCREEN ======================== -->
 <div id="lock-screen" style="
   position:fixed;inset:0;z-index:9999;
@@ -3436,6 +3442,22 @@ document.addEventListener('DOMContentLoaded', init);
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/workplan916/sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          const banner = document.getElementById('update-banner');
+          if (banner) { banner.style.display = 'flex'; }
+        }
+      });
+    });
+  });
+}
+</script>
 
 </body>
 </html>
