@@ -1,0 +1,15 @@
+{
+  "name": "תוכנית עבודה | פלגת 916",
+  "short_name": "תוכנית עבודה",
+  "description": "תוכנית עבודה שנתית/חודשית/שבועית לפלגת 916 בסיס אשדוד",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A2647",
+  "theme_color": "#0A2647",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

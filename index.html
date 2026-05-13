@@ -1,0 +1,3434 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <meta name="full-screen" content="yes">
+  <meta name="theme-color" content="#0A2647">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="תוכנית עבודה">
+  <link rel="manifest" href="manifest.json">
+  <title>תוכנית עבודה | פלגת 916</title>
+  <style>
+    /* ======================== RESET & BASE ======================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy-dark:   #0A2647;
+      --navy-mid:    #144272;
+      --navy-light:  #205295;
+      --gold:        #C9A84C;
+      --gold-light:  #E8C96A;
+      --gold-pale:   #FFF8E7;
+      --white:       #FFFFFF;
+      --gray-50:     #F8FAFC;
+      --gray-100:    #F1F5F9;
+      --gray-200:    #E2E8F0;
+      --gray-300:    #CBD5E1;
+      --gray-400:    #94A3B8;
+      --gray-600:    #475569;
+      --gray-800:    #1E293B;
+      --shadow-sm:   0 1px 3px rgba(0,0,0,0.12);
+      --shadow-md:   0 4px 12px rgba(0,0,0,0.15);
+      --shadow-lg:   0 8px 24px rgba(0,0,0,0.2);
+      --radius-sm:   6px;
+      --radius-md:   10px;
+      --radius-lg:   16px;
+      --transition:  all 0.2s ease;
+    }
+    html {
+      font-size: 16px;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    body {
+      font-family: 'Segoe UI', 'Arial Hebrew', Arial, sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-800);
+      min-height: 100vh;
+      direction: rtl;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    /* ======================== SCROLLBAR ======================== */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--gray-100); }
+    ::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 3px; }
+
+    /* ======================== HEADER ======================== */
+    #app-header {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-mid) 100%);
+      color: var(--white);
+      padding: 0 20px;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      flex-wrap: wrap;
+    }
+    .header-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0 10px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      flex-wrap: wrap;
+    }
+    .search-input {
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 7px 14px;
+      color: white;
+      font-size: 0.85rem;
+      outline: none;
+      width: 220px;
+      direction: rtl;
+      transition: var(--transition);
+    }
+    .search-input::placeholder { color: rgba(255,255,255,0.5); }
+    .search-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.15); }
+    .filter-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.7);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filter-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy-dark);
+    }
+    .filter-label {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .logo-anchor {
+      font-size: 2.2rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .logo-img {
+      height: 48px;
+      width: auto;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+      object-fit: contain;
+    }
+    .logo-text h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+    }
+    .logo-text p {
+      font-size: 0.72rem;
+      color: var(--gray-300);
+      letter-spacing: 0.5px;
+    }
+    .header-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    /* View switcher pills */
+    .view-pills {
+      display: flex;
+      background: rgba(255,255,255,0.1);
+      border-radius: 30px;
+      padding: 4px;
+      gap: 2px;
+    }
+    .view-pill {
+      background: transparent;
+      border: none;
+      color: var(--gray-300);
+      padding: 6px 16px;
+      border-radius: 26px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .view-pill:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+    .view-pill.active { background: var(--gold); color: var(--navy-dark); }
+    /* Date navigation */
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: var(--white);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.2); }
+    #current-period-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      min-width: 140px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    /* Action buttons */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .action-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      padding: 7px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: var(--transition);
+      white-space: nowrap;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.2); border-color: var(--gold); }
+    .action-btn.gold { background: var(--gold); border-color: var(--gold); color: var(--navy-dark); }
+    .action-btn.gold:hover { background: var(--gold-light); }
+    /* Today button */
+    #btn-today {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    #btn-today:hover { background: var(--gold); color: var(--navy-dark); }
+    /* Sync indicator */
+    .sync-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #6B7280;
+      display: inline-block;
+    }
+    .sync-dot.connected { background: #10B981; }
+    .sync-dot.syncing { background: var(--gold); animation: pulse 1s infinite; }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ======================== MAIN CONTENT ======================== */
+    #main-content {
+      padding: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* ======================== YEAR VIEW ======================== */
+    .year-view {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    @media(max-width:1100px){ .year-view{ grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:768px){ .year-view{ grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:480px){ .year-view{ grid-template-columns: 1fr; } }
+
+    .month-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+    .month-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-color: var(--gold);
+    }
+    .month-card.current-month { border-color: var(--navy-mid); }
+    .month-card-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid));
+      color: var(--white);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .month-card-header h3 { font-size: 0.95rem; font-weight: 700; color: var(--gold-light); }
+    .month-card-header span { font-size: 0.75rem; color: var(--gray-300); }
+    .month-mini-grid {
+      padding: 10px;
+    }
+    .mini-day-headers {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      margin-bottom: 4px;
+    }
+    .mini-day-header {
+      text-align: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--gray-400);
+      padding: 2px 0;
+    }
+    .mini-day-header.weekend { color: #F87171; }
+    .mini-weeks { display: flex; flex-direction: column; gap: 2px; }
+    .mini-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+    .mini-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      border-radius: 4px;
+      position: relative;
+      transition: var(--transition);
+    }
+    .mini-day.other-month { color: var(--gray-300); }
+    .mini-day.today {
+      background: transparent;
+      color: var(--navy-dark);
+      font-weight: 800;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+    }
+    .mini-day.has-task::after {
+      content: '';
+      position: absolute;
+      bottom: 1px;
+      width: 4px; height: 4px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+    .mini-day.has-holiday {
+      background: var(--gold-pale);
+      color: var(--navy-dark);
+      font-weight: 600;
+    }
+    .mini-day.weekend { color: #F87171; }
+    .month-card-footer {
+      padding: 8px 14px;
+      border-top: 1px solid var(--gray-100);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .month-task-count {
+      font-size: 0.72rem;
+      color: var(--gray-600);
+    }
+    .month-go-btn {
+      font-size: 0.72rem;
+      color: var(--navy-mid);
+      font-weight: 600;
+      background: var(--gray-100);
+      border: none;
+      padding: 3px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .month-go-btn:hover { background: var(--navy-dark); color: var(--white); }
+
+    /* ======================== MONTH VIEW ======================== */
+    .month-view {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .month-view-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid));
+    }
+    .month-day-header {
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gray-300);
+    }
+    .month-day-header.weekend-header { color: #F87171; }
+    .month-grid { display: flex; flex-direction: column; }
+    .month-row { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .month-cell {
+      min-height: 100px;
+      border-left: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 6px;
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .month-cell:last-child { border-left: none; }
+    .month-cell:hover { background: var(--gray-50); }
+    .month-cell.other-month { background: #FAFAFA; }
+    .month-cell.today { background: rgba(10,38,71,0.04); }
+    .month-cell.weekend-cell { background: #FFF5F5; }
+    .cell-day-num {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .cell-day-num .today-circle {
+      background: transparent;
+      color: var(--navy-dark);
+      width: 28px; height: 28px;
+      font-weight: 800;
+      border: 2.5px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+    }
+    .cell-holiday {
+      font-size: 0.65rem;
+      color: #92400E;
+      background: #FEF3C7;
+      border-radius: 4px;
+      padding: 2px 5px;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cell-task-chip {
+      font-size: 0.65rem;
+      color: var(--white);
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+    .cell-more {
+      font-size: 0.65rem;
+      color: var(--gray-400);
+      margin-top: 2px;
+    }
+    .cell-add-btn {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      background: transparent;
+      border: none;
+      color: var(--gray-400);
+      font-size: 1rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .month-cell:hover .cell-add-btn { opacity: 1; color: var(--navy-mid); }
+
+    /* ======================== WEEK VIEW ======================== */
+    .week-view {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+    @media(max-width:900px){ .week-view{ grid-template-columns: 1fr; } }
+
+    .day-column {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 500px;
+      border: 2px solid transparent;
+      transition: var(--transition);
+    }
+    .day-column.drag-over {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.3);
+    }
+    .day-column.today-column {
+      border-color: var(--navy-mid);
+    }
+    .day-col-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid));
+      color: var(--white);
+      padding: 14px 12px 12px;
+      text-align: center;
+    }
+    .day-col-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin-bottom: 3px;
+    }
+    .day-col-date {
+      font-size: 0.78rem;
+      color: var(--gray-300);
+    }
+    .day-col-date-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1;
+      margin: 4px 0;
+    }
+    .today-column .day-col-date-num {
+      color: var(--gold-light);
+    }
+    .week-today-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 3px solid var(--gold);
+      color: var(--gold-light);
+    }
+    .day-holidays-area {
+      padding: 8px;
+      background: var(--gold-pale);
+      border-bottom: 1px solid #F0E68C;
+      min-height: 10px;
+    }
+    .holiday-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 20px;
+      margin: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+    .event-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 20px;
+      margin: 2px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+    .event-pill .delete-event-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      cursor: pointer;
+      font-size: 0.7rem;
+      padding: 0 2px;
+      line-height: 1;
+    }
+    .cell-event {
+      font-size: 0.65rem;
+      font-weight: 700;
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-radius: 4px;
+      padding: 1px 4px;
+      color: white;
+    }
+    .tasks-area {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+    }
+    .tasks-area.drag-over-inner {
+      background: rgba(201,168,76,0.05);
+    }
+    .task-card {
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      border-right: 4px solid var(--gold);
+      padding: 8px 10px;
+      box-shadow: var(--shadow-sm);
+      cursor: grab;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      transition: var(--transition);
+      user-select: none;
+      position: relative;
+    }
+    .task-card:hover { box-shadow: var(--shadow-md); transform: translateX(-2px); }
+    .task-card.dragging { opacity: 0.4; cursor: grabbing; }
+    .task-card.fixed-task { border-style: dashed; }
+    .drag-handle {
+      color: var(--gray-400);
+      font-size: 0.9rem;
+      cursor: grab;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .task-body { flex: 1; min-width: 0; }
+    .task-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      word-break: break-word;
+      line-height: 1.3;
+    }
+    .task-desc {
+      font-size: 0.72rem;
+      color: var(--gray-600);
+      margin-top: 3px;
+      line-height: 1.3;
+    }
+    .task-badge {
+      font-size: 0.6rem;
+      background: var(--gray-100);
+      color: var(--gray-600);
+      padding: 1px 5px;
+      border-radius: 8px;
+      margin-top: 4px;
+      display: inline-block;
+    }
+    .task-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .task-card:hover .task-actions { opacity: 1; }
+    .task-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+    .task-action-btn:hover { background: var(--gray-100); }
+    .task-action-btn.delete:hover { background: #FEE2E2; }
+    .day-footer {
+      padding: 10px;
+      border-top: 1px solid var(--gray-100);
+    }
+    .add-task-btn {
+      width: 100%;
+      background: var(--gray-50);
+      border: 1.5px dashed var(--gray-300);
+      color: var(--gray-600);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .add-task-btn:hover {
+      background: var(--navy-dark);
+      border-color: var(--navy-dark);
+      color: var(--white);
+    }
+
+    /* ======================== MODALS ======================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,38,71,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+    .modal-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid));
+      color: var(--white);
+      padding: 18px 20px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 { font-size: 1.05rem; font-weight: 700; color: var(--gold-light); }
+    .modal-close {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: var(--white);
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.2); }
+    .modal-body { padding: 20px; }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      transition: var(--transition);
+      background: var(--white);
+      color: var(--gray-800);
+      font-family: inherit;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--navy-mid);
+      box-shadow: 0 0 0 3px rgba(20,66,114,0.1);
+    }
+    .form-textarea { resize: vertical; min-height: 70px; }
+    .color-picker-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .color-option {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .color-option:hover, .color-option.selected {
+      border-color: var(--navy-dark);
+      transform: scale(1.15);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .checkbox-label input { width: 16px; height: 16px; cursor: pointer; }
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid));
+      color: var(--white);
+      border: none;
+      padding: 10px 22px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 700;
+      transition: var(--transition);
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-600);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-secondary:hover { background: var(--gray-200); }
+    .btn-danger {
+      background: #FEE2E2;
+      color: #DC2626;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-danger:hover { background: #DC2626; color: var(--white); }
+
+    /* Fixed Tasks Panel */
+    .dow-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dow-btn {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 2px solid #E2E8F0;
+      background: white;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #64748B;
+      transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dow-btn:hover { border-color: var(--navy-dark); color: var(--navy-dark); background: #F1F5FF; }
+    .dow-btn.selected { background: var(--navy-dark); border-color: var(--navy-dark); color: var(--gold-light); }
+
+    .fixed-task-list { display: flex; flex-direction: column; gap: 10px; }
+    .fixed-task-item {
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-right: 4px solid var(--gold);
+    }
+    .fixed-task-item-body { flex: 1; }
+    .fixed-task-item-title { font-size: 0.88rem; font-weight: 700; }
+    .fixed-task-item-sub { font-size: 0.72rem; color: var(--gray-600); margin-top: 2px; }
+    .fixed-task-actions { display: flex; gap: 6px; }
+
+    /* Sync Modal */
+    .sync-section {
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 14px;
+      border: 1px solid var(--gray-200);
+    }
+    .sync-section h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; color: var(--navy-dark); }
+    .sync-code-display {
+      background: var(--navy-dark);
+      color: var(--gold-light);
+      font-family: monospace;
+      font-size: 1.1rem;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 2px;
+      text-align: center;
+      margin: 8px 0;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .status-badge.ok { background: #D1FAE5; color: #065F46; }
+    .status-badge.warn { background: #FEF3C7; color: #92400E; }
+    .status-badge.err { background: #FEE2E2; color: #991B1B; }
+
+    /* Toast notifications */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--navy-dark);
+      color: var(--white);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      border-right: 4px solid var(--gold);
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.5s forwards;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toast.success { border-right-color: #10B981; }
+    .toast.error { border-right-color: #EF4444; }
+    @keyframes slideIn { from { transform: translateX(-100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+    @keyframes fadeOut { to { opacity:0; transform:translateX(-100%); } }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--gray-400);
+    }
+    .empty-state .empty-icon { font-size: 2rem; margin-bottom: 8px; }
+    .empty-state p { font-size: 0.8rem; }
+
+    /* Loading */
+    .loading-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--navy-light), var(--gold));
+      background-size: 200% 100%;
+      animation: loadingAnim 1.5s infinite;
+      z-index: 9999;
+    }
+    @keyframes loadingAnim { 0%{background-position:0%} 100%{background-position:200%} }
+
+    /* Tabs in modals */
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid var(--gray-200);
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-400);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: var(--transition);
+    }
+    .tab-btn.active { color: var(--navy-dark); border-bottom-color: var(--navy-dark); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ======================== PRINT STYLES ======================== */
+    #print-header { display: none; }
+
+    @page { size: A4 landscape; margin: 0.8cm; }
+
+    @media print {
+
+      #app-header, #toast-container, .modal-overlay { display: none !important; }
+      body { background: white; font-family: 'Arial Hebrew', Arial, sans-serif; }
+      #main-content { padding: 0; }
+
+      /* Default (weekly): hide month/year */
+      .month-view, .year-view { display: none !important; }
+      /* Monthly mode: hide week, show month */
+      body.print-monthly .week-view,
+      body.print-monthly .mobile-week-view { display: none !important; }
+      body.print-monthly .month-view { display: block !important; }
+
+      /* Print header */
+      #print-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: #0A2647;
+        color: white;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .print-header-logos { display: flex; align-items: center; gap: 10px; }
+      .print-header-logos img { height: 44px; width: auto; filter: brightness(1); }
+      .print-header-title { text-align: center; flex: 1; }
+      .print-header-title h2 { color: #C9A84C; font-size: 1.1rem; font-weight: 800; margin: 0; }
+      .print-header-title p { color: #CBD5E1; font-size: 0.72rem; margin: 3px 0 0; }
+      .print-header-date { font-size: 0.8rem; color: #C9A84C; font-weight: 700; text-align: left; }
+
+      /* Week grid */
+      .week-view {
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 6px;
+      }
+      .day-column {
+        min-height: auto;
+        border: 1.5px solid #0A2647;
+        border-radius: 6px;
+        overflow: hidden;
+        break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .day-col-header {
+        background: #0A2647 !important;
+        padding: 8px 10px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .day-col-name { color: #C9A84C !important; font-size: 0.85rem !important; }
+      .day-col-date-num { font-size: 1.3rem !important; }
+      .day-col-date { font-size: 0.65rem !important; }
+      .day-holidays-area {
+        background: #FFF8E7 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .holiday-pill {
+        background: #F59E0B !important;
+        font-size: 0.65rem !important;
+        padding: 2px 6px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .tasks-area { padding: 6px !important; gap: 4px !important; overflow: visible !important; }
+      .task-card {
+        border-radius: 4px !important;
+        padding: 5px 7px !important;
+        break-inside: avoid;
+        border-right-width: 4px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .task-title { font-size: 0.75rem !important; }
+      .task-desc { font-size: 0.65rem !important; }
+      .task-actions, .add-task-btn, .day-footer, .done-btn { display: none !important; }
+      .drag-handle { display: none !important; }
+      .empty-state { display: none !important; }
+
+      /* ── Monthly print styles ── */
+      body.print-monthly .month-view {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+      body.print-monthly .month-view-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body.print-monthly .month-cell {
+        min-height: 88px !important;
+        padding: 4px 5px !important;
+        cursor: default !important;
+        break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body.print-monthly .month-cell.other-month { opacity: 0.35; }
+      body.print-monthly .month-cell.today {
+        background: rgba(10,38,71,0.06) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body.print-monthly .month-cell.weekend-cell {
+        background: #FFF5F5 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body.print-monthly .cell-day-num { font-size: 0.8rem !important; margin-bottom: 2px !important; }
+      body.print-monthly .cell-task-chip {
+        font-size: 0.6rem !important;
+        padding: 1px 4px !important;
+        margin-bottom: 1px !important;
+        display: block !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body.print-monthly .cell-holiday,
+      body.print-monthly .cell-event {
+        font-size: 0.57rem !important;
+        padding: 1px 3px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body.print-monthly .cell-more { font-size: 0.6rem !important; color: #64748B; }
+      body.print-monthly .cell-add-btn { display: none !important; }
+
+      /* Footer line */
+      #print-footer {
+        display: block !important;
+        text-align: center;
+        font-size: 0.65rem;
+        color: #94A3B8;
+        margin-top: 8px;
+        border-top: 1px solid #E2E8F0;
+        padding-top: 4px;
+      }
+    }
+
+    /* ======================== RESPONSIVE ======================== */
+    @media(max-width: 768px) {
+      header { padding: 0; }
+
+      /* ── Row 1: top bar (logo + actions) ── */
+      .header-main {
+        flex-wrap: wrap;
+        padding: 10px 14px 0;
+        gap: 0;
+        align-items: center;
+      }
+
+      .logo-area {
+        flex: 1;
+        min-width: 0;
+        gap: 8px;
+        padding-bottom: 10px;
+      }
+      .logo-img.logo-916 { display: none; }
+      .logo-img { height: 30px !important; }
+      .logo-text h1 { font-size: 0.92rem; }
+      .logo-text p { display: none; }
+
+      /* Action buttons: scrollable row, icon-only circles */
+      .header-actions {
+        flex-shrink: 0;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 6px;
+        padding-bottom: 10px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        align-items: center;
+      }
+      .header-actions::-webkit-scrollbar { display: none; }
+      .action-btn {
+        width: 36px; height: 36px;
+        min-width: 36px;
+        padding: 0;
+        border-radius: 50%;
+        font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+      .action-btn span { display: none; }
+      #user-info {
+        padding: 0;
+        background: transparent;
+        border: none;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      #user-name { display: none; }
+      #user-avatar { width: 30px; height: 30px; }
+      #user-info button {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 6px;
+        color: #CBD5E1;
+        border: none;
+      }
+
+      /* ── Row 2: view pills + date nav (full width) ── */
+      .header-center {
+        width: 100%;
+        flex: none;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px 0 10px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        align-items: center;
+      }
+
+      /* Pills: full width, pill-group style */
+      .view-pills {
+        width: 100%;
+        max-width: 320px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 30px;
+        padding: 3px;
+        gap: 0;
+        display: flex;
+      }
+      .view-pill {
+        flex: 1;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 0.8rem;
+        border-radius: 24px;
+        border: none;
+        background: transparent;
+      }
+      .view-pill.active {
+        background: var(--gold);
+        color: var(--navy-dark);
+      }
+
+      /* Date nav row */
+      .date-nav { gap: 12px; }
+      .nav-btn { width: 32px; height: 32px; font-size: 1.1rem; }
+      #current-period-label { font-size: 0.88rem; min-width: 170px; text-align: center; }
+      #btn-today {
+        font-size: 0.76rem;
+        padding: 4px 14px;
+        border-radius: 20px;
+      }
+
+      /* ── Filter bar ── */
+      .header-filter-bar {
+        padding: 8px 14px 10px;
+        gap: 6px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        border-top: 1px solid rgba(255,255,255,0.08);
+      }
+      .header-filter-bar::-webkit-scrollbar { display: none; }
+      .search-input { width: 130px; min-width: 130px; font-size: 0.8rem; padding: 6px 10px; }
+      .filter-btn { padding: 5px 12px; font-size: 0.76rem; white-space: nowrap; }
+
+      /* Main */
+      #main-content { padding: 8px; }
+
+      /* Week view — stack days vertically */
+      .week-view { gap: 10px; }
+      .day-column { min-height: 180px; }
+      .day-col-date-num { font-size: 1.4rem !important; }
+      .tasks-area { max-height: 300px; overflow-y: auto; }
+
+      /* Month view */
+      .month-cell { min-height: 55px !important; padding: 4px !important; }
+      .cell-day-num { font-size: 0.8rem; }
+      .cell-task-chip { font-size: 0.6rem !important; padding: 1px 3px !important; }
+      .cell-holiday, .cell-event { font-size: 0.58rem; }
+
+      /* Modals — bottom sheet */
+      .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+      .modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        max-height: 88vh !important;
+        overflow-y: auto !important;
+      }
+
+      /* Task cards */
+      .task-card { padding: 8px 10px; }
+      .task-title { font-size: 0.85rem; }
+
+      /* Day footer buttons */
+      .day-footer button { font-size: 0.78rem; padding: 8px 4px; }
+    }
+
+    @media(max-width: 480px) {
+      .view-pill { padding: 4px 7px; font-size: 0.7rem; }
+      .logo-img.logo-916 { display: none; }
+      .logo-text h1 { font-size: 0.85rem; }
+      .nav-btn { width: 28px; height: 28px; font-size: 1rem; }
+      #current-period-label { font-size: 0.82rem; min-width: 80px; }
+      .action-btn { padding: 5px 7px; }
+      .header-filter-bar { padding: 4px 0 8px; }
+    }
+
+    /* Divider */
+    .section-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 16px 0; color: var(--gray-400); font-size: 0.78rem;
+    }
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--gray-200);
+    }
+
+    /* Priority indicator */
+    .priority-high { box-shadow: 0 0 0 2px #EF4444 !important; }
+    .priority-low { opacity: 0.75; }
+    /* ======================== MOBILE DAY STRIP ======================== */
+    .mobile-week-view { display: flex; flex-direction: column; gap: 0; }
+
+    .mobile-day-strip {
+      display: flex;
+      gap: 4px;
+      padding: 10px 8px;
+      background: var(--navy-dark);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .mobile-day-strip::-webkit-scrollbar { display: none; }
+
+    .day-strip-item {
+      flex: 1;
+      min-width: 54px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 4px 6px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .day-strip-item:active { opacity: 0.8; }
+    .day-strip-item.selected { background: var(--gold); }
+    .day-strip-item.today:not(.selected) { border: 2px solid var(--gold); }
+
+    .day-strip-name {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.6);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .day-strip-item.selected .day-strip-name { color: var(--navy-dark); }
+    .day-strip-item.today:not(.selected) .day-strip-name { color: var(--gold-light); }
+
+    .day-strip-num {
+      font-size: 1.15rem;
+      color: white;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .day-strip-item.selected .day-strip-num { color: var(--navy-dark); }
+    .day-strip-item.today:not(.selected) .day-strip-num { color: var(--gold-light); }
+
+    .day-strip-badge {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      background: #EF4444;
+      color: white;
+      font-size: 0.58rem;
+      font-weight: 800;
+      min-width: 14px;
+      height: 14px;
+      border-radius: 7px;
+      padding: 0 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .day-strip-item.selected .day-strip-badge { background: var(--navy-dark); color: var(--gold); }
+
+    /* Mobile single day column — make it fuller */
+    @media(max-width: 768px) {
+      .mobile-week-view .day-column {
+        min-height: calc(100vh - 220px);
+        border-radius: 14px;
+      }
+      .mobile-week-view .tasks-area { max-height: none; overflow-y: visible; }
+      .mobile-week-view .day-footer { position: sticky; bottom: 0; background: white; padding-bottom: 12px; border-radius: 0 0 14px 14px; z-index: 10; }
+    }
+
+    /* Done state */
+    .task-card.done { opacity: 0.5; }
+    .task-card.done .task-title { text-decoration: line-through; color: var(--gray-400); }
+    .done-btn {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-300);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+    }
+    .done-btn:hover { border-color: #10B981; background: #D1FAE5; }
+    .done-btn.checked { background: #10B981; border-color: #10B981; color: white; }
+  </style>
+</head>
+<body>
+
+<!-- ======================== LOCK SCREEN ======================== -->
+<div id="lock-screen" style="
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#0A2647 0%,#144272 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;
+">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png" style="height:80px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.4))">
+  <div style="text-align:center;">
+    <h1 style="color:#C9A84C;font-size:1.5rem;font-weight:800;margin-bottom:4px;">תוכנית עבודה</h1>
+    <p style="color:#94A3B8;font-size:0.85rem;">מוקד לוגיסטיקה 916 | בסיס אשדוד</p>
+  </div>
+  <div style="background:rgba(255,255,255,0.07);border-radius:16px;padding:28px 32px;width:300px;text-align:center;">
+    <p style="color:#CBD5E1;font-size:0.9rem;margin-bottom:20px;">כניסה לאפליקציה</p>
+    <button onclick="signInWithGoogle()" id="google-signin-btn" style="
+      width:100%;padding:14px 20px;
+      background:white;color:#333;
+      font-weight:700;font-size:0.95rem;
+      border:none;border-radius:10px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);
+      transition:opacity 0.2s;">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      כניסה עם Google
+    </button>
+    <div id="lock-error" style="color:#F87171;font-size:0.78rem;margin-top:12px;min-height:18px;"></div>
+  </div>
+  <p style="color:#475569;font-size:0.7rem;">© כל הזכויות שמורות נאור סעדי</p>
+</div>
+
+<!-- ======================== EVENT MODAL ======================== -->
+<div class="modal-overlay" id="event-modal-overlay">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h2 class="modal-title">🗓️ הוסף אירוע</h2>
+      <button class="modal-close" onclick="closeModal('event-modal-overlay')">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label class="form-label">כותרת האירוע</label>
+        <input id="event-title-input" type="text" class="form-input" placeholder="לדוגמה: טקס, אירוע יחידתי...">
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;">
+          <label class="form-label">תאריך התחלה</label>
+          <input id="event-date-input" type="date" class="form-input" oninput="validateEventDates()">
+        </div>
+        <div style="flex:1;">
+          <label class="form-label">תאריך סיום <span style="font-size:0.75rem;color:#94A3B8;">(אופציונלי)</span></label>
+          <input id="event-end-date-input" type="date" class="form-input" oninput="validateEventDates()">
+        </div>
+      </div>
+      <div id="event-date-warning" style="display:none;color:#EF4444;font-size:0.8rem;padding:6px 10px;background:#FEF2F2;border-radius:8px;">⚠️ תאריך הסיום חייב להיות אחרי תאריך ההתחלה</div>
+      <div style="display:flex;align-items:center;gap:10px;background:#F8FAFC;border-radius:10px;padding:12px;">
+        <input type="checkbox" id="event-yearly-cb" style="width:18px;height:18px;cursor:pointer;">
+        <label for="event-yearly-cb" style="font-size:0.88rem;font-weight:700;color:#0A2647;cursor:pointer;">חזרה שנתית — יופיע בכל שנה באותו תאריך</label>
+      </div>
+      <div>
+        <label class="form-label">צבע</label>
+        <div id="event-color-picker" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+      <button onclick="saveEvent()" class="btn-primary" style="width:100%;padding:12px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);">
+        שמור אירוע
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== ADMIN PANEL MODAL ======================== -->
+<div id="admin-modal-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;width:500px;max-width:95vw;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;">
+    <div style="background:#0A2647;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">
+      <h2 style="color:#C9A84C;font-size:1.1rem;font-weight:800;">👑 פאנל מנהל</h2>
+      <button onclick="document.getElementById('admin-modal-overlay').style.display='none'" style="background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:20px;overflow-y:auto;flex:1;">
+      <p style="color:#475569;font-size:0.85rem;margin-bottom:16px;">משתמשים רשומים באפליקציה:</p>
+      <div id="admin-users-list">טוען...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading bar -->
+<div class="loading-bar" id="loading-bar" style="display:none"></div>
+
+<!-- ======================== HEADER ======================== -->
+<header id="app-header">
+  <div class="header-main">
+    <div class="logo-area">
+      <img class="logo-img logo-916" src="https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png" alt="חיל הים">
+      <div class="logo-text">
+        <h1>תוכנית עבודה</h1>
+        <p>פלגת 916 &nbsp;|&nbsp; בסיס אשדוד</p>
+      </div>
+      <img class="logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/IN_Ashdod_Tag.svg/960px-IN_Ashdod_Tag.svg.png" alt="בסיס אשדוד">
+    </div>
+
+    <div class="header-center">
+      <div class="view-pills">
+        <button class="view-pill active" data-view="year">שנתי</button>
+        <button class="view-pill" data-view="month">חודשי</button>
+        <button class="view-pill" data-view="week">שבועי</button>
+      </div>
+      <div class="date-nav">
+        <button class="nav-btn" id="btn-prev" title="הקודם">‹</button>
+        <span id="current-period-label">2026</span>
+        <button class="nav-btn" id="btn-next" title="הבא">›</button>
+      </div>
+      <button id="btn-today">היום</button>
+    </div>
+
+    <div class="header-actions">
+      <button class="action-btn" id="btn-fixed-tasks" title="משימות קבועות">
+        📌 <span>קבועות</span>
+      </button>
+      <button class="action-btn gold" id="btn-add-task" title="הוסף משימה">
+        ＋ <span>משימה</span>
+      </button>
+      <button class="action-btn" id="btn-add-event" title="הוסף אירוע" onclick="openAddEvent(null)" style="background:#EFF6FF;color:#1D4ED8;border:1.5px solid #BFDBFE;">
+        🗓️ <span>אירוע</span>
+      </button>
+      <div style="position:relative;">
+        <button class="action-btn" id="btn-print" title="הדפסה/PDF" onclick="togglePrintMenu(event)">
+          🖨️ <span>הדפס</span>
+        </button>
+        <div id="print-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:white;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.18);border:1px solid #E2E8F0;overflow:hidden;z-index:500;min-width:170px;">
+          <button onclick="printWeekly()" style="display:flex;align-items:center;gap:10px;padding:11px 16px;width:100%;border:none;background:none;cursor:pointer;font-size:0.85rem;color:#0A2647;font-weight:700;font-family:inherit;direction:rtl;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='none'">📅 הדפסה שבועית</button>
+          <div style="height:1px;background:#E2E8F0;margin:0 12px;"></div>
+          <button onclick="printMonthly()" style="display:flex;align-items:center;gap:10px;padding:11px 16px;width:100%;border:none;background:none;cursor:pointer;font-size:0.85rem;color:#0A2647;font-weight:700;font-family:inherit;direction:rtl;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='none'">📆 הדפסה חודשית</button>
+        </div>
+      </div>
+      <button class="action-btn" id="btn-sync" title="סנכרון">
+        🔄 <span id="sync-label">סנכרון</span>
+        <span class="sync-dot" id="sync-dot"></span>
+      </button>
+      <button class="action-btn" id="btn-admin" title="פאנל מנהל" onclick="openAdminPanel()" style="display:none;">
+        👑 <span>מנהל</span>
+      </button>
+      <div id="user-info" style="display:none;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border-radius:10px;padding:6px 12px;">
+        <img id="user-avatar" src="" style="width:28px;height:28px;border-radius:50%;border:2px solid #C9A84C;" onerror="this.style.display='none'">
+        <span id="user-name" style="color:white;font-size:0.82rem;font-weight:600;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+        <button onclick="signOutUser()" title="יציאה" style="background:none;border:none;color:#94A3B8;cursor:pointer;font-size:0.8rem;padding:2px 4px;">יציאה</button>
+      </div>
+    </div>
+  </div>
+  <div class="header-filter-bar">
+    <span class="filter-label">🔍</span>
+    <input type="text" class="search-input" id="search-input" placeholder="חיפוש משימה..." oninput="state.searchQuery=this.value.trim();render();">
+    <span class="filter-label" style="margin-right:10px;">סינון:</span>
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">הכל</button>
+    <button class="filter-btn" data-filter="pending" onclick="setFilter('pending')">לא בוצע</button>
+    <button class="filter-btn" data-filter="done" onclick="setFilter('done')">בוצע ✓</button>
+    <span id="filter-counter" style="color:rgba(255,255,255,0.5);font-size:0.78rem;display:none;"></span>
+  </div>
+</header>
+
+<!-- ======================== MAIN CONTENT ======================== -->
+<!-- Print header (hidden on screen, shown in print) -->
+<div id="print-header">
+  <div class="print-header-logos">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/%D7%A1%D7%9E%D7%9C_%D7%93%D7%91%D7%95%D7%A8%D7%99%D7%9D.png" alt="חיל הים">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/IN_Ashdod_Tag.svg/960px-IN_Ashdod_Tag.svg.png" alt="בסיס אשדוד">
+  </div>
+  <div class="print-header-title">
+    <h2 id="print-title-label">תוכנית עבודה שבועית</h2>
+    <p id="print-period-label">פלגת 916 | בסיס אשדוד</p>
+  </div>
+  <div class="print-header-date" id="print-date-label"></div>
+</div>
+
+<main id="main-content">
+  <div id="view-container"></div>
+</main>
+
+<div id="print-footer">הופק מתוכנית עבודה דיגיטלית | מוקד לוגיסטיקה 916 בסיס אשדוד &nbsp;|&nbsp; © כל הזכויות שמורות נאור סעדי</div>
+
+<!-- ======================== TOAST CONTAINER ======================== -->
+<div id="toast-container"></div>
+
+
+<!-- ======================== TASK MODAL ======================== -->
+<div class="modal-overlay" id="task-modal-overlay">
+  <div class="modal" id="task-modal">
+    <div class="modal-header">
+      <h2 id="task-modal-title">הוסף משימה</h2>
+      <button class="modal-close" id="task-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-task-id">
+      <div class="form-group">
+        <label class="form-label">כותרת המשימה *</label>
+        <input type="text" class="form-input" id="task-title-input" placeholder="הכנס כותרת...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">תיאור (אופציונלי)</label>
+        <textarea class="form-textarea" id="task-desc-input" placeholder="פירוט נוסף..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">תאריך</label>
+          <input type="date" class="form-input" id="task-date-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">עדיפות</label>
+          <select class="form-select" id="task-priority-input">
+            <option value="normal">רגילה</option>
+            <option value="high">גבוהה 🔴</option>
+            <option value="low">נמוכה</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">סיווג משימה</label>
+        <select class="form-select" id="task-classification-input">
+          <option value="">— ללא סיווג —</option>
+          <option value="דוחות">📄 דוחות</option>
+          <option value="ספירות">🌿 ספירות</option>
+          <option value="אימונים/תרגילים">⚔️ אימונים/תרגילים</option>
+          <option value="הכשרות">🎓 הכשרות</option>
+          <option value="ביקורות">🔍 ביקורות</option>
+          <option value="מחלקה">🏢 מחלקה</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">צבע</label>
+        <div class="color-picker-row" id="task-color-picker"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="task-delete-btn" style="display:none; margin-left:auto;">🗑️ מחק</button>
+      <button class="btn-secondary" id="task-cancel-btn">ביטול</button>
+      <button class="btn-primary" id="task-save-btn">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== FIXED TASKS MODAL ======================== -->
+<div class="modal-overlay" id="fixed-modal-overlay">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h2>📌 משימות קבועות</h2>
+      <button class="modal-close" id="fixed-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="list">רשימה</button>
+        <button class="tab-btn" data-tab="add">הוסף חדשה</button>
+      </div>
+      <div class="tab-panel active" id="tab-list">
+        <div id="fixed-tasks-list"></div>
+      </div>
+      <div class="tab-panel" id="tab-add">
+        <div class="form-group">
+          <label class="form-label">כותרת *</label>
+          <input type="text" class="form-input" id="ft-title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">תיאור</label>
+          <textarea class="form-textarea" id="ft-desc" placeholder="פירוט..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">סוג חזרה</label>
+          <select class="form-select" id="ft-recurrence">
+            <option value="weekly">שבועי — כל שבוע ביום מסוים</option>
+            <option value="daily">יומי — כל יום</option>
+            <option value="biweekly">דו-שבועי — כל שבועיים</option>
+            <option value="monthly_date">חודשי — כל חודש בתאריך קבוע</option>
+            <option value="yearly">שנתי — כל שנה בתאריך קבוע</option>
+            <option value="specific_dates">תאריכים ספציפיים — בחר תאריכים ידנית</option>
+          </select>
+        </div>
+
+        <!-- ימים בשבוע (שבועי / דו-שבועי) -->
+        <div class="form-group" id="ft-dow-group">
+          <label class="form-label">ימים בשבוע <span id="ft-dow-hint" style="font-size:0.75rem;color:#94A3B8;font-weight:400;">(ניתן לבחור מספר ימים)</span></label>
+          <div class="dow-picker" id="ft-dow-picker">
+            <button type="button" class="dow-btn" data-day="0">א׳</button>
+            <button type="button" class="dow-btn" data-day="1">ב׳</button>
+            <button type="button" class="dow-btn" data-day="2">ג׳</button>
+            <button type="button" class="dow-btn" data-day="3">ד׳</button>
+            <button type="button" class="dow-btn" data-day="4">ה׳</button>
+          </div>
+        </div>
+
+        <!-- תאריך בחודש (חודשי) -->
+        <div class="form-group" id="ft-monthday-group" style="display:none">
+          <label class="form-label">תאריך בחודש (1–31)</label>
+          <input type="number" class="form-input" id="ft-monthday" min="1" max="31" value="1" placeholder="נגיד: 1 = כל ראשון לחודש">
+        </div>
+
+        <!-- שנתי: חודש + יום -->
+        <div class="form-group" id="ft-yearly-group" style="display:none">
+          <label class="form-label">תאריך שנתי</label>
+          <div style="display:flex;gap:10px;">
+            <select class="form-select" id="ft-yearly-month">
+              <option value="0">ינואר</option><option value="1">פברואר</option>
+              <option value="2">מרץ</option><option value="3">אפריל</option>
+              <option value="4">מאי</option><option value="5">יוני</option>
+              <option value="6">יולי</option><option value="7">אוגוסט</option>
+              <option value="8">ספטמבר</option><option value="9">אוקטובר</option>
+              <option value="10">נובמבר</option><option value="11">דצמבר</option>
+            </select>
+            <input type="number" class="form-input" id="ft-yearly-day" min="1" max="31" value="1" placeholder="יום">
+          </div>
+        </div>
+
+        <!-- תאריכים ספציפיים -->
+        <div class="form-group" id="ft-specific-group" style="display:none">
+          <label class="form-label">בחר תאריכים</label>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input type="date" class="form-input" id="ft-specific-date-input">
+            <button class="btn-secondary" id="ft-add-specific-date" type="button">הוסף</button>
+          </div>
+          <div id="ft-specific-dates-list" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">סיווג משימה</label>
+          <select class="form-select" id="ft-classification">
+            <option value="">— ללא סיווג —</option>
+            <option value="דוחות">📄 דוחות</option>
+            <option value="ספירות">🌿 ספירות</option>
+            <option value="אימונים/תרגילים">⚔️ אימונים/תרגילים</option>
+            <option value="הכשרות">🎓 הכשרות</option>
+            <option value="ביקורות">🔍 ביקורות</option>
+            <option value="מחלקה">🏢 מחלקה</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">צבע</label>
+          <div class="color-picker-row" id="ft-color-picker"></div>
+        </div>
+        <button class="btn-primary" id="ft-save-btn" style="width:100%; margin-top:8px;">💾 שמור משימה קבועה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SYNC MODAL ======================== -->
+<div class="modal-overlay" id="sync-modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>🔄 סנכרון בין מכשירים</h2>
+      <button class="modal-close" id="sync-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="sync-section">
+        <h3>קוד הסנכרון שלך</h3>
+        <p style="font-size:0.78rem;color:var(--gray-600);margin-bottom:6px;">שתף קוד זה עם מכשיר אחר כדי לסנכרן את תוכנית העבודה</p>
+        <div class="sync-code-display" id="sync-code-display">טוען...</div>
+        <button class="btn-secondary" id="copy-sync-code" style="width:100%;margin-top:6px;">📋 העתק קוד</button>
+      </div>
+
+      <div class="sync-section">
+        <h3>כניסה עם קוד קיים</h3>
+        <p style="font-size:0.78rem;color:var(--gray-600);margin-bottom:8px;">הכנס קוד מכשיר אחר לסנכרון</p>
+        <div style="display:flex;gap:8px;">
+          <input type="text" class="form-input" id="sync-code-input" placeholder="הכנס קוד סנכרון...">
+          <button class="btn-primary" id="btn-connect-sync">חבר</button>
+        </div>
+      </div>
+
+      <div class="sync-section">
+        <h3>סטטוס חיבור Firebase</h3>
+        <div id="sync-status-area">
+          <span class="status-badge warn">⚠️ Firebase לא מוגדר</span>
+        </div>
+        <details style="margin-top:10px;">
+          <summary style="font-size:0.78rem;cursor:pointer;color:var(--navy-mid);font-weight:600;">הגדרת Firebase (לסנכרון בזמן אמת)</summary>
+          <div style="margin-top:10px;">
+            <p style="font-size:0.72rem;color:var(--gray-600);margin-bottom:8px;">הדבק את קוד ה-Firebase Config שלך:</p>
+            <textarea class="form-textarea" id="firebase-config-input" placeholder='{"apiKey":"...","projectId":"...","authDomain":"..."}'></textarea>
+            <button class="btn-primary" id="btn-save-firebase" style="margin-top:8px;">שמור הגדרות Firebase</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="section-divider">ייצוא / ייבוא</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" id="btn-export-json" style="flex:1;">📤 ייצא JSON</button>
+        <label class="btn-secondary" style="flex:1;text-align:center;cursor:pointer;">
+          📥 ייבא JSON
+          <input type="file" accept=".json" id="import-json-input" style="display:none">
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== JAVASCRIPT ======================== -->
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const HEB_MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const HEB_DAYS_FULL = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const HEB_DAYS_SHORT = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+const WORK_DAYS = [0,1,2,3,4]; // Sun-Thu
+const TASK_COLORS = [
+  '#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#0EA5E9','#14B8A6','#C9A84C','#6366F1'
+];
+const DEFAULT_COLOR = '#3B82F6';
+const CLASSIFICATIONS = ['דוחות', 'ספירות', 'אימונים/תרגילים', 'הכשרות', 'ביקורות', 'מחלקה'];
+const CLASSIFICATION_COLORS = {
+  'דוחות': '#EF4444',
+  'ספירות': '#10B981',
+  'אימונים/תרגילים': '#F59E0B',
+  'הכשרות': '#3B82F6',
+  'ביקורות': '#8B5CF6',
+  'מחלקה': '#EC4899',
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  view: 'year',
+  year: new Date().getFullYear(),
+  month: new Date().getMonth(),
+  weekStart: getWeekStart(new Date()),
+  tasks: [],
+  fixedTasks: [],
+  holidays: {},
+  draggedTaskId: null,
+  editingTaskId: null,
+  selectedColor: DEFAULT_COLOR,
+  ftSelectedColor: DEFAULT_COLOR,
+  editingFixedTaskId: null,
+  selectedDay: new Date(),
+  ftSelectedDays: new Set([0]),
+  firebase: null,
+  syncCode: null,
+  connected: false,
+  currentUser: null,
+  firestoreUnsubscribe: null,
+  events: [],
+  searchQuery: '',
+  filterStatus: 'all',
+};
+
+// ============================================================
+// STORAGE
+// ============================================================
+function saveLocal() {
+  localStorage.setItem('wp_tasks', JSON.stringify(state.tasks));
+  localStorage.setItem('wp_fixed', JSON.stringify(state.fixedTasks));
+  localStorage.setItem('wp_completed', JSON.stringify(state.completedInstances||[]));
+  localStorage.setItem('wp_events', JSON.stringify(state.events||[]));
+  localStorage.setItem('wp_sync_code', state.syncCode || '');
+}
+
+function loadLocal() {
+  try {
+    state.tasks = JSON.parse(localStorage.getItem('wp_tasks') || '[]');
+    state.fixedTasks = JSON.parse(localStorage.getItem('wp_fixed') || '[]');
+    state.completedInstances = JSON.parse(localStorage.getItem('wp_completed') || '[]');
+    state.events = JSON.parse(localStorage.getItem('wp_events') || '[]');
+    // syncCode set by auth handler, not hardcoded here
+  } catch(e) {
+    state.tasks = [];
+    state.fixedTasks = [];
+  }
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random()*16|0;
+    return (c==='x'?r:(r&0x3|0x8)).toString(16);
+  });
+}
+
+function generateSyncCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<8;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code.substring(0,4)+'-'+code.substring(4);
+}
+
+function formatDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+function parseDate(str) {
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+
+function getWeekStart(d) {
+  const date = new Date(d);
+  const dow = date.getDay(); // 0=Sun
+  date.setDate(date.getDate() - dow);
+  return date;
+}
+
+function getWeekDays(weekStart) {
+  return [0,1,2,3,4].map(i => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+}
+
+function isToday(d) {
+  const t = new Date();
+  return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate();
+}
+
+function isSameMonth(d, year, month) {
+  return d.getFullYear()===year && d.getMonth()===month;
+}
+
+function getDaysInMonth(year, month) {
+  return new Date(year, month+1, 0).getDate();
+}
+
+function getFirstDayOfMonth(year, month) {
+  return new Date(year, month, 1).getDay();
+}
+
+// ============================================================
+// HOLIDAYS (Hebcal + Christian + Muslim)
+// ============================================================
+
+// Major Christian holidays (fixed dates)
+function getChristianHolidays(year) {
+  return {
+    [`${year}-12-24`]: ['✝️ ערב חג המולד'],
+    [`${year}-12-25`]: ['✝️ חג המולד'],
+    [`${year}-01-06`]: ['✝️ יום שלושת המלכים (אפיפניה)'],
+    [`${year}-11-01`]: ['✝️ יום כל הקדושים'],
+  };
+}
+
+// Approximate Muslim holidays — fetched from Nager.Date (Israel public holidays includes Muslim)
+async function fetchMuslimHolidays(year) {
+  const cacheKey = `holidays_muslim_${year}`;
+  const cached = localStorage.getItem(cacheKey);
+  if(cached) return JSON.parse(cached);
+  try {
+    const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/IL`);
+    const data = await res.json();
+    const holidays = {};
+    const muslimKeywords = ['Eid','Ramadan','Mawlid','Islamic','Nabi','Fitr','Adha','Muharram'];
+    data.forEach(h => {
+      if(!h.date) return;
+      const isMuslim = muslimKeywords.some(k => h.localName?.includes(k) || h.name?.includes(k));
+      if(isMuslim || h.types?.includes('Muslim')) {
+        if(!holidays[h.date]) holidays[h.date] = [];
+        holidays[h.date].push(`☪️ ${h.localName || h.name}`);
+      }
+    });
+    // Add well-known Muslim holidays manually as fallback
+    localStorage.setItem(cacheKey, JSON.stringify(holidays));
+    return holidays;
+  } catch(e) { return {}; }
+}
+
+async function fetchHolidays(year) {
+  const cacheKey = `holidays_he_${year}`;
+  const cached = localStorage.getItem(cacheKey);
+  if(cached) { state.holidays = JSON.parse(cached); return; }
+  showLoading(true);
+  try {
+    const url = `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=${year}&month=x&ss=on&mf=on&c=off&geo=geoname&geonameid=293397&M=on&s=on&lg=he`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const holidays = {};
+    (data.items||[]).forEach(item => {
+      if(!item.date) return;
+      const dateKey = item.date.substring(0,10);
+      if(!holidays[dateKey]) holidays[dateKey] = [];
+      holidays[dateKey].push(item.title);
+    });
+    // Merge Christian holidays
+    const christian = getChristianHolidays(year);
+    Object.entries(christian).forEach(([dk, names]) => {
+      if(!holidays[dk]) holidays[dk] = [];
+      holidays[dk].push(...names);
+    });
+    // Merge Muslim holidays
+    const muslim = await fetchMuslimHolidays(year);
+    Object.entries(muslim).forEach(([dk, names]) => {
+      if(!holidays[dk]) holidays[dk] = [];
+      holidays[dk].push(...names);
+    });
+    state.holidays = holidays;
+    localStorage.setItem(`holidays_he_${year}`, JSON.stringify(holidays));
+  } catch(e) {
+    console.warn('Hebcal API failed:', e);
+    state.holidays = {};
+  }
+  showLoading(false);
+}
+
+// ============================================================
+// TASKS HELPERS
+// ============================================================
+function nextWorkday(date) {
+  const d = new Date(date);
+  while(true) {
+    const dow = d.getDay();
+    const dk = formatDate(d);
+    const isWeekend = dow === 5 || dow === 6;
+    const isHoliday = !!(state.holidays[dk] && state.holidays[dk].length);
+    if(!isWeekend && !isHoliday) return d;
+    d.setDate(d.getDate() + 1);
+  }
+}
+
+function getAdjustedDate(year, month, day) {
+  return nextWorkday(new Date(year, month, day));
+}
+
+function getTasksForDate(d) {
+  const dateKey = formatDate(d);
+  const dayOfWeek = d.getDay();
+  const specific = state.tasks.filter(t => t.date === dateKey);
+  const fixed = state.fixedTasks.filter(ft => {
+    if(ft.recurrence === 'daily') return true;
+    if(ft.recurrence === 'weekly') {
+      const days = ft.daysOfWeek || (ft.dayOfWeek !== undefined ? [ft.dayOfWeek] : []);
+      return days.map(Number).includes(dayOfWeek);
+    }
+    if(ft.recurrence === 'biweekly') {
+      const days = ft.daysOfWeek || (ft.dayOfWeek !== undefined ? [ft.dayOfWeek] : []);
+      if(!days.map(Number).includes(dayOfWeek)) return false;
+      const weekNum = Math.floor((d - new Date(d.getFullYear(),0,1)) / (7*24*3600*1000));
+      return weekNum % 2 === 0;
+    }
+    if(ft.recurrence === 'monthly_date') { const adj = getAdjustedDate(d.getFullYear(), d.getMonth(), parseInt(ft.monthDay)); return formatDate(adj) === dateKey; }
+    if(ft.recurrence === 'yearly') { const adj = getAdjustedDate(d.getFullYear(), parseInt(ft.yearlyMonth), parseInt(ft.yearlyDay)); return formatDate(adj) === dateKey; }
+    if(ft.recurrence === 'specific_dates') return (ft.specificDates||[]).includes(dateKey);
+    return false;
+  }).map(ft => ({...ft, id: `ft_${ft.id}_${dateKey}`, isFixed: true, origId: ft.id}));
+
+  let all = [...specific, ...fixed];
+
+  // Sort by classification order
+  all.sort((a, b) => {
+    const ai = a.classification ? CLASSIFICATIONS.indexOf(a.classification) : CLASSIFICATIONS.length;
+    const bi = b.classification ? CLASSIFICATIONS.indexOf(b.classification) : CLASSIFICATIONS.length;
+    return ai - bi;
+  });
+
+  // Apply search filter
+  if(state.searchQuery) {
+    const q = state.searchQuery.toLowerCase();
+    all = all.filter(t => t.title?.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q));
+  }
+
+  // Apply status filter
+  if(state.filterStatus === 'done') {
+    all = all.filter(t => isTaskDone(t, dateKey));
+  } else if(state.filterStatus === 'pending') {
+    all = all.filter(t => !isTaskDone(t, dateKey));
+  }
+
+  return all;
+}
+
+function setFilter(f) {
+  state.filterStatus = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+  render();
+}
+
+function getTasksForMonth(year, month) {
+  const tasks = [];
+  const days = getDaysInMonth(year, month);
+  for(let d=1; d<=days; d++) {
+    const date = new Date(year, month, d);
+    const t = getTasksForDate(date);
+    tasks.push(...t);
+  }
+  return tasks;
+}
+
+function addTask(taskData) {
+  const task = { id: uuid(), createdAt: new Date().toISOString(), ...taskData };
+  state.tasks.push(task);
+  saveLocal();
+  syncToFirebase();
+  return task;
+}
+
+function updateTask(id, updates) {
+  state.tasks = state.tasks.map(t => t.id===id ? {...t, ...updates} : t);
+  saveLocal();
+  syncToFirebase();
+}
+
+function deleteTask(id) {
+  state.tasks = state.tasks.filter(t => t.id!==id);
+  saveLocal();
+  syncToFirebase();
+  showToast('המשימה נמחקה', 'success');
+}
+
+function addFixedTask(data) {
+  const ft = { id: uuid(), ...data };
+  state.fixedTasks.push(ft);
+  saveLocal();
+  syncToFirebase();
+  return ft;
+}
+
+function deleteFixedTask(id) {
+  state.fixedTasks = state.fixedTasks.filter(ft => ft.id!==id);
+  saveLocal();
+  syncToFirebase();
+  showToast('המשימה הקבועה נמחקה', 'success');
+}
+
+function moveTaskToDate(taskId, newDate) {
+  if(taskId.startsWith('ft_')) {
+    // Fixed task dragged: create a date-specific copy, do not remove fixed
+    const origId = taskId.split('_')[1];
+    const ft = state.fixedTasks.find(f => f.id===origId);
+    if(ft) {
+      addTask({ title: ft.title, description: ft.description, date: newDate, color: ft.color, priority: 'normal' });
+      showToast('משימה קבועה הועתקה לתאריך', 'success');
+    }
+    return;
+  }
+  updateTask(taskId, { date: newDate });
+  showToast('המשימה הועברה', 'success');
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+const EVENT_COLORS = ['#3B82F6','#8B5CF6','#EC4899','#EF4444','#10B981','#F59E0B','#0EA5E9','#6366F1'];
+
+function openAddEvent(dateStr) {
+  document.getElementById('event-date-input').value = dateStr || formatDate(new Date());
+  document.getElementById('event-end-date-input').value = '';
+  document.getElementById('event-title-input').value = '';
+  document.getElementById('event-yearly-cb').checked = false;
+  document.getElementById('event-date-warning').style.display = 'none';
+  state.eventSelectedColor = EVENT_COLORS[0];
+  buildEventColorPicker();
+  openModal('event-modal-overlay');
+  setTimeout(() => document.getElementById('event-title-input').focus(), 100);
+}
+
+function validateEventDates() {
+  const start = document.getElementById('event-date-input').value;
+  const end = document.getElementById('event-end-date-input').value;
+  const warn = document.getElementById('event-date-warning');
+  warn.style.display = (end && end < start) ? '' : 'none';
+}
+
+function buildEventColorPicker() {
+  const container = document.getElementById('event-color-picker');
+  container.innerHTML = '';
+  EVENT_COLORS.forEach(c => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `width:24px;height:24px;border-radius:50%;background:${c};border:${c===state.eventSelectedColor?'3px solid #0A2647':'2px solid transparent'};cursor:pointer;`;
+    btn.onclick = () => {
+      state.eventSelectedColor = c;
+      buildEventColorPicker();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function saveEvent() {
+  const title = document.getElementById('event-title-input').value.trim();
+  const startDate = document.getElementById('event-date-input').value;
+  const endDate = document.getElementById('event-end-date-input').value;
+  const yearly = document.getElementById('event-yearly-cb').checked;
+  if(!title || !startDate) { showToast('נא למלא כותרת ותאריך התחלה', 'error'); return; }
+  if(endDate && endDate < startDate) { showToast('תאריך הסיום חייב להיות אחרי ההתחלה', 'error'); return; }
+  const ev = {
+    id: uuid(), title,
+    date: startDate, startDate,
+    endDate: endDate || startDate,
+    color: state.eventSelectedColor || EVENT_COLORS[0],
+    repeatYearly: yearly,
+    createdAt: new Date().toISOString()
+  };
+  if(!state.events) state.events = [];
+  state.events.push(ev);
+  saveLocal();
+  syncToFirebase();
+  render();
+  closeModal('event-modal-overlay');
+  showToast('האירוע נוסף', 'success');
+}
+
+function eventCoversDay(e, dk) {
+  const start = e.startDate || e.date;
+  const end = e.endDate || start;
+  if(e.repeatYearly) {
+    const startMD = start.slice(5);
+    const endMD = end.slice(5);
+    const dkMD = dk.slice(5);
+    return dkMD >= startMD && dkMD <= endMD;
+  }
+  return dk >= start && dk <= end;
+}
+
+function isEventStart(e, dk) {
+  const start = e.startDate || e.date;
+  if(e.repeatYearly) return dk.slice(5) === start.slice(5);
+  return dk === start;
+}
+
+// ============================================================
+// PRINT
+// ============================================================
+function togglePrintMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('print-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function printWeekly() {
+  document.getElementById('print-menu').style.display = 'none';
+  if(state.view !== 'week') { state.view = 'week'; render(); }
+  const days = getWeekDays(state.weekStart);
+  const first = days[0], last = days[4];
+  const periodStr = `${first.getDate()} ${HEB_MONTHS[first.getMonth()]} – ${last.getDate()} ${HEB_MONTHS[last.getMonth()]} ${last.getFullYear()}`;
+  document.getElementById('print-title-label').textContent = 'תוכנית עבודה שבועית';
+  document.getElementById('print-period-label').textContent = periodStr;
+  document.getElementById('print-date-label').textContent = `הופק: ${formatDate(new Date())}`;
+  document.body.classList.remove('print-monthly');
+  setTimeout(() => window.print(), 200);
+}
+
+function printMonthly() {
+  document.getElementById('print-menu').style.display = 'none';
+  if(state.view !== 'month') { state.view = 'month'; render(); }
+  const monthName = `${HEB_MONTHS[state.month]} ${state.year}`;
+  document.getElementById('print-title-label').textContent = 'תוכנית עבודה חודשית';
+  document.getElementById('print-period-label').textContent = monthName;
+  document.getElementById('print-date-label').textContent = `הופק: ${formatDate(new Date())}`;
+  document.body.classList.add('print-monthly');
+  setTimeout(() => { window.print(); document.body.classList.remove('print-monthly'); }, 200);
+}
+
+function deleteEvent(id) {
+  state.events = (state.events||[]).filter(e => e.id !== id);
+  saveLocal();
+  syncToFirebase();
+  render();
+}
+
+// ============================================================
+// FIREBASE + AUTH
+// ============================================================
+const ADMIN_EMAIL = 'naorsadi@gmail.com';
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBpck5HccxwsxKH6TaeCbbpZR84f77fG3M",
+  authDomain: "workplan-916.firebaseapp.com",
+  projectId: "workplan-916",
+  storageBucket: "workplan-916.firebasestorage.app",
+  messagingSenderId: "209797627402",
+  appId: "1:209797627402:web:01a9f736ef30a0175ae9f3"
+};
+
+function initFirebase() {
+  try {
+    if(typeof firebase === 'undefined') return;
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    state.firebase = firebase.firestore();
+    firebase.auth().onAuthStateChanged(handleAuthStateChange);
+  } catch(e) { console.warn('Firebase init failed:', e); }
+}
+
+function signInWithGoogle() {
+  if(typeof firebase === 'undefined') return;
+  const btn = document.getElementById('google-signin-btn');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).catch(e => {
+    document.getElementById('lock-error').textContent = 'שגיאה בכניסה, נסה שנית';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  });
+}
+
+function signOutUser() {
+  firebase.auth().signOut();
+}
+
+function handleAuthStateChange(user) {
+  if(user) {
+    state.currentUser = user;
+    // Admin uses original doc to keep existing data; others get their own doc
+    state.syncCode = user.email === ADMIN_EMAIL ? 'WORKPLAN-916-NAOR' : 'USER_' + user.uid;
+
+    // Hide lock screen
+    document.getElementById('lock-screen').style.display = 'none';
+
+    // Show user info in header
+    const userInfo = document.getElementById('user-info');
+    userInfo.style.display = 'flex';
+    document.getElementById('user-name').textContent = user.displayName || user.email;
+    const avatar = document.getElementById('user-avatar');
+    if(user.photoURL) avatar.src = user.photoURL;
+
+    // Show admin button only for admin
+    if(user.email === ADMIN_EMAIL) {
+      document.getElementById('btn-admin').style.display = 'flex';
+    }
+
+    // Update header subtitle and logos based on user
+    const subtitle = document.querySelector('.logo-text p');
+    const navyLogo = document.querySelector('.logo-img.logo-916');
+    if(user.email !== ADMIN_EMAIL) {
+      if(subtitle) subtitle.textContent = 'בסיס אשדוד';
+      if(navyLogo) navyLogo.style.display = 'none';
+    }
+
+    // Save user profile to Firestore
+    saveUserProfile(user);
+
+    // Setup listener for this user's data
+    setupFirebaseListener();
+
+    // Check for shared task import in URL
+    const params = new URLSearchParams(window.location.search);
+    const importId = params.get('import');
+    if(importId) importSharedTask(importId);
+
+  } else {
+    state.currentUser = null;
+    state.syncCode = null;
+    document.getElementById('lock-screen').style.display = 'flex';
+    document.getElementById('user-info').style.display = 'none';
+    document.getElementById('btn-admin').style.display = 'none';
+  }
+}
+
+function saveUserProfile(user) {
+  if(!state.firebase) return;
+  state.firebase.collection('users').doc(user.uid).set({
+    email: user.email,
+    displayName: user.displayName || '',
+    photoURL: user.photoURL || '',
+    lastLogin: new Date().toISOString()
+  }, { merge: true }).catch(()=>{});
+}
+
+function setupFirebaseListener() {
+  if(!state.firebase || !state.syncCode) return;
+  if(state.firestoreUnsubscribe) state.firestoreUnsubscribe();
+  const docRef = state.firebase.collection('workplans').doc(state.syncCode);
+  state.firestoreUnsubscribe = docRef.onSnapshot(doc => {
+    if(doc.exists) {
+      const data = doc.data();
+      if(data.tasks) state.tasks = data.tasks;
+      if(data.fixedTasks) state.fixedTasks = data.fixedTasks;
+      if(data.completedInstances) state.completedInstances = data.completedInstances;
+      if(data.events) state.events = data.events;
+      saveLocal();
+      render();
+      updateSyncDot(true);
+    }
+  }, err => { console.warn('Firebase listener error:', err); updateSyncDot(false); });
+  state.connected = true;
+  updateSyncDot(true);
+}
+
+function refreshFromFirebase() {
+  if(!state.firebase || !state.syncCode) return;
+  const docRef = state.firebase.collection('workplans').doc(state.syncCode);
+  docRef.get().then(doc => {
+    if(doc.exists) {
+      const data = doc.data();
+      if(data.tasks) state.tasks = data.tasks;
+      if(data.fixedTasks) state.fixedTasks = data.fixedTasks;
+      if(data.completedInstances) state.completedInstances = data.completedInstances;
+      if(data.events) state.events = data.events;
+      saveLocal();
+      render();
+      updateSyncDot(true);
+    }
+  }).catch(e => console.warn('Refresh error:', e));
+}
+
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible') refreshFromFirebase();
+});
+
+function syncToFirebase() {
+  if(!state.firebase || !state.syncCode) return;
+  const docRef = state.firebase.collection('workplans').doc(state.syncCode);
+  docRef.set({ tasks: state.tasks, fixedTasks: state.fixedTasks, completedInstances: state.completedInstances || [], events: state.events || [], updatedAt: new Date().toISOString() })
+    .catch(e => console.warn('Sync error:', e));
+}
+
+// ============================================================
+// ADMIN PANEL
+// ============================================================
+function openAdminPanel() {
+  document.getElementById('admin-modal-overlay').style.display = 'flex';
+  loadAllUsers();
+}
+
+function loadAllUsers() {
+  if(!state.firebase) return;
+  const list = document.getElementById('admin-users-list');
+  list.innerHTML = 'טוען...';
+  state.firebase.collection('users').get().then(snapshot => {
+    if(snapshot.empty) { list.innerHTML = '<p style="color:#94A3B8">אין משתמשים עדיין</p>'; return; }
+    list.innerHTML = '';
+    snapshot.forEach(doc => {
+      const u = doc.data();
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid #E2E8F0;';
+      div.innerHTML = `
+        ${u.photoURL ? `<img src="${u.photoURL}" style="width:36px;height:36px;border-radius:50%;">` : '<div style="width:36px;height:36px;border-radius:50%;background:#144272;display:flex;align-items:center;justify-content:center;color:#C9A84C;font-weight:800;">👤</div>'}
+        <div style="flex:1;">
+          <div style="font-weight:700;color:#1E293B;font-size:0.9rem;">${u.displayName||'ללא שם'}</div>
+          <div style="font-size:0.78rem;color:#94A3B8;">${u.email}</div>
+          <div style="font-size:0.72rem;color:#CBD5E1;">כניסה אחרונה: ${u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('he-IL') : '-'}</div>
+        </div>
+        ${u.email !== ADMIN_EMAIL ? `<button onclick="deleteUserFromApp('${doc.id}','${u.displayName||u.email}')" style="background:#FEE2E2;color:#DC2626;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.8rem;font-weight:700;">מחק</button>` : '<span style="font-size:0.75rem;color:#C9A84C;font-weight:700;">מנהל</span>'}
+      `;
+      list.appendChild(div);
+    });
+  }).catch(e => { list.innerHTML = '<p style="color:#EF4444">שגיאה בטעינה</p>'; });
+}
+
+function deleteUserFromApp(uid, name) {
+  if(!confirm(`למחוק את ${name}? הנתונים שלו יישארו אבל הוא לא יוכל להיכנס מחדש.`)) return;
+  state.firebase.collection('users').doc(uid).delete().then(() => {
+    showToast('המשתמש נמחק', 'success');
+    loadAllUsers();
+  }).catch(() => showToast('שגיאה במחיקה', 'error'));
+}
+
+// ============================================================
+// TASK SHARING
+// ============================================================
+function shareTask(taskId) {
+  if(!state.firebase) { showToast('נדרש חיבור Firebase', 'error'); return; }
+  const task = state.tasks.find(t => t.id === taskId);
+  if(!task) return;
+  const shareId = uuid();
+  const shareData = { ...task, sharedBy: state.currentUser?.email || '', sharedAt: new Date().toISOString() };
+  state.firebase.collection('sharedTasks').doc(shareId).set(shareData).then(() => {
+    const url = `${location.origin}${location.pathname}?import=${shareId}`;
+    navigator.clipboard.writeText(url).then(() => showToast('קישור הועתק ללוח!', 'success'))
+      .catch(() => {
+        prompt('העתק את הקישור:', url);
+      });
+  }).catch(() => showToast('שגיאה ביצירת קישור', 'error'));
+}
+
+function importSharedTask(shareId) {
+  if(!state.firebase) return;
+  state.firebase.collection('sharedTasks').doc(shareId).get().then(doc => {
+    if(!doc.exists) { showToast('הקישור לא תקין או פג תוקף', 'error'); return; }
+    const task = doc.data();
+    delete task.sharedBy; delete task.sharedAt; delete task.id;
+    if(confirm(`לייבא את המשימה "${task.title}" ללוח שלך?`)) {
+      addTask(task);
+      showToast('המשימה נוספה ללוח שלך!', 'success');
+      // Clean URL
+      window.history.replaceState({}, '', location.pathname);
+    }
+  }).catch(() => showToast('שגיאה בייבוא המשימה', 'error'));
+}
+
+function updateSyncDot(connected) {
+  const dot = document.getElementById('sync-dot');
+  if(!dot) return;
+  dot.className = 'sync-dot ' + (connected ? 'connected' : '');
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showLoading(v) {
+  const el = document.getElementById('loading-bar');
+  if(el) el.style.display = v ? 'block' : 'none';
+}
+
+function showToast(msg, type='info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = { success:'✓', error:'✕', info:'ℹ' };
+  toast.innerHTML = `<span>${icons[type]||'ℹ'}</span> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function buildColorPicker(containerId, selectedColor, onChange) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  container.innerHTML = TASK_COLORS.map(c => `
+    <div class="color-option ${c===selectedColor?'selected':''}"
+         style="background:${c}"
+         data-color="${c}"
+         onclick="selectColor('${containerId}','${c}')"></div>
+  `).join('');
+}
+
+function selectColor(containerId, color) {
+  document.querySelectorAll(`#${containerId} .color-option`).forEach(el => {
+    el.classList.toggle('selected', el.dataset.color===color);
+  });
+  if(containerId==='task-color-picker') state.selectedColor = color;
+  else if(containerId==='ft-color-picker') state.ftSelectedColor = color;
+}
+
+// ============================================================
+// RENDER — MAIN
+// ============================================================
+function render() {
+  updatePeriodLabel();
+  updateViewPills();
+  updateFilterCounter();
+  const container = document.getElementById('view-container');
+  if(state.view==='year') container.innerHTML = renderYearView();
+  else if(state.view==='month') container.innerHTML = renderMonthView();
+  else if(state.view==='week') container.innerHTML = renderWeekView();
+  attachViewListeners();
+}
+
+function updateFilterCounter() {
+  const counter = document.getElementById('filter-counter');
+  if(!counter) return;
+  const active = state.filterStatus !== 'all' || state.searchQuery;
+  if(!active) { counter.style.display = 'none'; return; }
+  let days = [];
+  if(state.view === 'week') days = isMobile() ? [state.selectedDay] : getWeekDays(state.weekStart);
+  const total = days.reduce((s, d) => s + getTasksForDate(d).length, 0);
+  counter.textContent = `${total} משימות מוצגות`;
+  counter.style.display = 'inline';
+}
+
+function updatePeriodLabel() {
+  const label = document.getElementById('current-period-label');
+  if(!label) return;
+  if(state.view==='year') label.textContent = state.year;
+  else if(state.view==='month') label.textContent = `${HEB_MONTHS[state.month]} ${state.year}`;
+  else {
+    if(isMobile() && state.selectedDay) {
+      const d = state.selectedDay;
+      label.textContent = `יום ${HEB_DAYS_FULL[d.getDay()]} | ${d.getDate()} ${HEB_MONTHS[d.getMonth()]}`;
+    } else {
+      const days = getWeekDays(state.weekStart);
+      const first = days[0], last = days[4];
+      if(first.getMonth()===last.getMonth())
+        label.textContent = `${first.getDate()}–${last.getDate()} ${HEB_MONTHS[first.getMonth()]} ${first.getFullYear()}`;
+      else
+        label.textContent = `${first.getDate()} ${HEB_MONTHS[first.getMonth()]} – ${last.getDate()} ${HEB_MONTHS[last.getMonth()]}`;
+    }
+  }
+}
+
+function updateViewPills() {
+  document.querySelectorAll('.view-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.view===state.view);
+  });
+}
+
+// ============================================================
+// YEAR VIEW
+// ============================================================
+function renderYearView() {
+  const months = Array.from({length:12}, (_,i) => renderMonthCard(state.year, i));
+  return `<div class="year-view">${months.join('')}</div>`;
+}
+
+function renderMonthCard(year, month) {
+  const today = new Date();
+  const isCurrent = today.getFullYear()===year && today.getMonth()===month;
+  const tasksCount = getTasksForMonth(year, month).length;
+  const firstDay = getFirstDayOfMonth(year, month);
+  const daysInMonth = getDaysInMonth(year, month);
+  const prevDays = getDaysInMonth(year, month-1);
+
+  // Build calendar grid (7 cols)
+  let cells = [];
+  for(let i=0; i<firstDay; i++) cells.push({day: prevDays-firstDay+i+1, curr:false, prev:true});
+  for(let i=1; i<=daysInMonth; i++) {
+    const d = new Date(year, month, i);
+    const dk = formatDate(d);
+    const hasH = !!state.holidays[dk];
+    const hasT = getTasksForDate(d).length > 0;
+    cells.push({day:i, curr:true, hasH, hasT, isToday: isToday(d), isWE: d.getDay()>=5});
+  }
+  const remaining = 42 - cells.length;
+  for(let i=1; i<=remaining; i++) cells.push({day:i, curr:false, next:true});
+
+  const dayHeaders = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'].map((d,i) =>
+    `<div class="mini-day-header${i>=5?' weekend':''}">${d}</div>`
+  ).join('');
+
+  const rows = [];
+  for(let r=0;r<6;r++) {
+    const rowCells = cells.slice(r*7,(r+1)*7).map(c => {
+      if(!c.curr) return `<div class="mini-day other-month">${c.day}</div>`;
+      let cls = 'mini-day';
+      if(c.isToday) cls += ' today';
+      else if(c.hasH) cls += ' has-holiday';
+      if(c.hasT) cls += ' has-task';
+      if(c.isWE) cls += ' weekend';
+      return `<div class="${cls}">${c.day}</div>`;
+    }).join('');
+    rows.push(`<div class="mini-week">${rowCells}</div>`);
+  }
+
+  return `
+    <div class="month-card${isCurrent?' current-month':''}" onclick="goToMonth(${year},${month})">
+      <div class="month-card-header">
+        <h3>${HEB_MONTHS[month]}</h3>
+        <span>${year}</span>
+      </div>
+      <div class="month-mini-grid">
+        <div class="mini-day-headers">${dayHeaders}</div>
+        <div class="mini-weeks">${rows.join('')}</div>
+      </div>
+      <div class="month-card-footer">
+        <span class="month-task-count">${tasksCount} משימות</span>
+        <button class="month-go-btn">פתח →</button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// MONTH VIEW
+// ============================================================
+function renderMonthView() {
+  const { year, month } = state;
+  const firstDay = getFirstDayOfMonth(year, month);
+  const daysInMonth = getDaysInMonth(year, month);
+  const prevDays = getDaysInMonth(year, month-1);
+
+  const dayHeaders = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'].map((d,i) =>
+    `<div class="month-day-header${i>=5?' weekend-header':''}">${d}</div>`
+  ).join('');
+
+  let cells = [];
+  for(let i=0;i<firstDay;i++) cells.push({day:prevDays-firstDay+i+1, curr:false, date:new Date(year,month-1,prevDays-firstDay+i+1)});
+  for(let i=1;i<=daysInMonth;i++) cells.push({day:i, curr:true, date:new Date(year,month,i)});
+  while(cells.length%7!==0) {
+    const n = cells.length - daysInMonth - firstDay + 1;
+    cells.push({day:n, curr:false, date:new Date(year,month+1,n)});
+  }
+
+  const rows = [];
+  for(let r=0; r<cells.length/7; r++) {
+    const rowCells = cells.slice(r*7,(r+1)*7).map(c => {
+      const dk = formatDate(c.date);
+      const holidays = state.holidays[dk] || [];
+      const tasks = getTasksForDate(c.date);
+      const isWE = c.date.getDay()>=5;
+      const isTD = isToday(c.date);
+      const isOther = !c.curr;
+
+      let cellCls = 'month-cell';
+      if(isOther) cellCls += ' other-month';
+      if(isTD) cellCls += ' today';
+      if(isWE) cellCls += ' weekend-cell';
+
+      const numEl = isTD
+        ? `<span class="today-circle">${c.day}</span>`
+        : `<span>${c.day}</span>`;
+
+      const holidayEls = holidays.slice(0,2).map(h =>
+        `<div class="cell-holiday">🕎 ${h}</div>`
+      ).join('');
+
+      const dayEvents = (state.events||[]).filter(e => eventCoversDay(e, dk));
+      const eventEls = dayEvents.slice(0,2).map(e =>
+        `<div class="cell-event" style="background:${e.color||'#3B82F6'}">🗓️ ${e.title}</div>`
+      ).join('');
+
+      const taskEls = tasks.slice(0,3).map(t =>
+        `<div class="cell-task-chip" style="background:${t.color||DEFAULT_COLOR}" title="${t.title}">${t.title}</div>`
+      ).join('');
+      const moreEl = tasks.length>3 ? `<div class="cell-more">+${tasks.length-3} עוד</div>` : '';
+
+      return `
+        <div class="${cellCls}" onclick="goToWeekFromDate('${dk}')">
+          <div class="cell-day-num">${numEl}</div>
+          ${holidayEls}
+          ${eventEls}
+          ${taskEls}
+          ${moreEl}
+          <button class="cell-add-btn" onclick="event.stopPropagation();openAddTask('${dk}')">＋</button>
+        </div>
+      `;
+    }).join('');
+    rows.push(`<div class="month-row">${rowCells}</div>`);
+  }
+
+  return `
+    <div class="month-view">
+      <div class="month-view-header">${dayHeaders}</div>
+      <div class="month-grid">${rows.join('')}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// WEEK VIEW
+// ============================================================
+function renderWeekView() {
+  const days = getWeekDays(state.weekStart);
+  if(isMobile()) {
+    const selDk = formatDate(state.selectedDay);
+    const selDay = days.find(d => formatDate(d) === selDk) || days[0];
+    return `<div class="mobile-week-view">${renderMobileDayStrip(days, selDk)}${renderDayColumn(selDay)}</div>`;
+  }
+  const columns = days.map(day => renderDayColumn(day)).join('');
+  return `<div class="week-view">${columns}</div>`;
+}
+
+function renderMobileDayStrip(days, selDk) {
+  return `<div class="mobile-day-strip">${days.map(d => {
+    const dk = formatDate(d);
+    const isSel = dk === selDk;
+    const isTD = isToday(d);
+    const count = getTasksForDate(d).length;
+    const badge = count ? `<span class="day-strip-badge">${count > 9 ? '9+' : count}</span>` : '';
+    return `<div class="day-strip-item${isSel?' selected':''}${isTD?' today':''}" onclick="selectMobileDay('${dk}')">
+      ${badge}
+      <span class="day-strip-name">${HEB_DAYS_SHORT[d.getDay()]}</span>
+      <span class="day-strip-num">${d.getDate()}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function selectMobileDay(dk) {
+  state.selectedDay = parseDate(dk);
+  state.weekStart = getWeekStart(state.selectedDay);
+  render();
+}
+
+function renderDayColumn(day) {
+  const dk = formatDate(day);
+  const holidays = state.holidays[dk] || [];
+  const dayEvents = (state.events||[]).filter(e => eventCoversDay(e, dk));
+  const tasks = getTasksForDate(day);
+  const isTD = isToday(day);
+  const dayName = HEB_DAYS_FULL[day.getDay()];
+
+  const topItems = [
+    ...holidays.map(h => `<span class="holiday-pill">🕎 ${h}</span>`),
+    ...dayEvents.map(e => {
+      const isStart = isEventStart(e, dk);
+      const hasRange = (e.endDate && e.endDate !== e.startDate) || (e.repeatYearly && e.endDate && e.endDate.slice(5) !== (e.startDate||e.date).slice(5));
+      const continueBadge = hasRange && !isStart ? `<span style="opacity:0.7;font-size:0.7rem;">↔</span>` : '';
+      return `<span class="event-pill" style="background:${e.color||'#3B82F6'}">${continueBadge}🗓️ ${escHtml(e.title)}${isStart ? `<button class="delete-event-btn" onclick="deleteEvent('${e.id}')" title="מחק אירוע">✕</button>` : ''}</span>`;
+    })
+  ].join('');
+
+  const topAreaHTML = topItems
+    ? `<div class="day-holidays-area">${topItems}</div>`
+    : '';
+
+  const tasksHTML = tasks.length
+    ? tasks.map(t => renderTaskCard(t, dk)).join('')
+    : `<div class="empty-state"><div class="empty-icon">📋</div><p>אין משימות</p></div>`;
+
+  return `
+    <div class="day-column${isTD?' today-column':''}" data-date="${dk}"
+         ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${dk}')"
+         ondragleave="handleDragLeave(event)">
+      <div class="day-col-header">
+        <div class="day-col-name">${dayName}</div>
+        <div class="day-col-date-num">${isTD ? `<span class="week-today-circle">${day.getDate()}</span>` : day.getDate()}</div>
+        <div class="day-col-date">${HEB_MONTHS[day.getMonth()]} ${day.getFullYear()}</div>
+      </div>
+      ${topAreaHTML}
+      <div class="tasks-area" id="tasks-${dk}">${tasksHTML}</div>
+      <div class="day-footer" style="display:flex;gap:6px;">
+        <button class="add-task-btn" style="flex:1;" onclick="openAddTask('${dk}')">＋ משימה</button>
+        <button class="add-task-btn" style="flex:1;background:#EFF6FF;color:#1D4ED8;" onclick="openAddEvent('${dk}')">🗓️ אירוע</button>
+      </div>
+    </div>
+  `;
+}
+
+function isTaskDone(task, dateKey) {
+  if(task.isFixed) return (state.completedInstances||[]).includes(`${task.origId}_${dateKey}`);
+  return task.completed === true;
+}
+
+function toggleTaskDone(taskId, dateKey, isFixed, origId) {
+  if(isFixed) {
+    const key = `${origId}_${dateKey}`;
+    if(!state.completedInstances) state.completedInstances = [];
+    if(state.completedInstances.includes(key))
+      state.completedInstances = state.completedInstances.filter(k=>k!==key);
+    else
+      state.completedInstances.push(key);
+  } else {
+    const task = state.tasks.find(t=>t.id===taskId);
+    if(task) task.completed = !task.completed;
+  }
+  saveLocal();
+  syncToFirebase();
+  render();
+}
+
+function renderTaskCard(task, dateKey) {
+  const priorityCls = task.priority==='high' ? ' priority-high' : task.priority==='low' ? ' priority-low' : '';
+  const done = isTaskDone(task, dateKey);
+  const fixedBadge = task.isFixed ? '<span class="task-badge">📌 קבועה</span>' : '';
+  const clsColor = task.classification ? (CLASSIFICATION_COLORS[task.classification] || '#64748B') : null;
+  const clsBadge = task.classification ? `<span class="task-badge" style="background:${clsColor};color:white;">${task.classification}</span>` : '';
+  const toggleCall = `toggleTaskDone('${task.id}','${dateKey}',${!!task.isFixed},'${task.origId||''}')`;
+  return `
+    <div class="task-card${task.isFixed?' fixed-task':''}${priorityCls}${done?' done':''}"
+         style="border-right-color:${task.color||DEFAULT_COLOR}"
+         draggable="true"
+         data-task-id="${task.id}"
+         ondragstart="handleDragStart(event,'${task.id}')">
+      <button class="done-btn${done?' checked':''}" onclick="${toggleCall}" title="${done?'סמן כלא בוצע':'סמן כבוצע'}">${done?'✓':''}</button>
+      <div class="task-body">
+        <div class="task-title">${escHtml(task.title)}</div>
+        ${task.description ? `<div class="task-desc">${escHtml(task.description)}</div>` : ''}
+        ${clsBadge}${fixedBadge}
+      </div>
+      <div class="task-actions">
+        ${!task.isFixed ? `<button class="task-action-btn" onclick="shareTask('${task.id}')" title="שתף משימה">🔗</button>` : ''}
+        ${!task.isFixed ? `<button class="task-action-btn" onclick="openEditTask('${task.id}')" title="עריכה">✏️</button>` : ''}
+        ${!task.isFixed ? `<button class="task-action-btn delete" onclick="confirmDeleteTask('${task.id}')" title="מחיקה">🗑️</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// DRAG & DROP
+// ============================================================
+function handleDragStart(e, taskId) {
+  state.draggedTaskId = taskId;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', taskId);
+  setTimeout(() => {
+    document.querySelectorAll(`[data-task-id="${taskId}"]`).forEach(el => el.classList.add('dragging'));
+  }, 0);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const col = e.currentTarget;
+  col.classList.add('drag-over');
+  const area = col.querySelector('.tasks-area');
+  if(area) area.classList.add('drag-over-inner');
+}
+
+function handleDragLeave(e) {
+  const col = e.currentTarget;
+  if(!col.contains(e.relatedTarget)) {
+    col.classList.remove('drag-over');
+    const area = col.querySelector('.tasks-area');
+    if(area) area.classList.remove('drag-over-inner');
+  }
+}
+
+function handleDrop(e, targetDate) {
+  e.preventDefault();
+  const col = e.currentTarget;
+  col.classList.remove('drag-over');
+  const area = col.querySelector('.tasks-area');
+  if(area) area.classList.remove('drag-over-inner');
+  document.querySelectorAll('.task-card.dragging').forEach(el => el.classList.remove('dragging'));
+
+  if(!state.draggedTaskId) return;
+  moveTaskToDate(state.draggedTaskId, targetDate);
+  state.draggedTaskId = null;
+  render();
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function openAddTask(dateStr) {
+  state.editingTaskId = null;
+  document.getElementById('task-modal-title').textContent = 'הוסף משימה';
+  document.getElementById('edit-task-id').value = '';
+  document.getElementById('task-title-input').value = '';
+  document.getElementById('task-desc-input').value = '';
+  document.getElementById('task-date-input').value = dateStr || formatDate(new Date());
+  document.getElementById('task-priority-input').value = 'normal';
+  document.getElementById('task-classification-input').value = '';
+  document.getElementById('task-delete-btn').style.display = 'none';
+  state.selectedColor = DEFAULT_COLOR;
+  buildColorPicker('task-color-picker', state.selectedColor);
+  openModal('task-modal-overlay');
+  setTimeout(() => document.getElementById('task-title-input').focus(), 100);
+}
+
+function openEditTask(id) {
+  const task = state.tasks.find(t => t.id===id);
+  if(!task) return;
+  state.editingTaskId = id;
+  document.getElementById('task-modal-title').textContent = 'עריכת משימה';
+  document.getElementById('edit-task-id').value = id;
+  document.getElementById('task-title-input').value = task.title;
+  document.getElementById('task-desc-input').value = task.description || '';
+  document.getElementById('task-date-input').value = task.date || '';
+  document.getElementById('task-priority-input').value = task.priority || 'normal';
+  document.getElementById('task-classification-input').value = task.classification || '';
+  document.getElementById('task-delete-btn').style.display = 'block';
+  state.selectedColor = task.color || DEFAULT_COLOR;
+  buildColorPicker('task-color-picker', state.selectedColor);
+  openModal('task-modal-overlay');
+}
+
+function saveTask() {
+  const title = document.getElementById('task-title-input').value.trim();
+  if(!title) { showToast('נא להכניס כותרת', 'error'); return; }
+  const taskData = {
+    title,
+    description: document.getElementById('task-desc-input').value.trim(),
+    date: document.getElementById('task-date-input').value,
+    priority: document.getElementById('task-priority-input').value,
+    classification: document.getElementById('task-classification-input').value,
+    color: state.selectedColor,
+  };
+  if(state.editingTaskId) {
+    updateTask(state.editingTaskId, taskData);
+    showToast('המשימה עודכנה', 'success');
+  } else {
+    addTask(taskData);
+    showToast('המשימה נוספה', 'success');
+  }
+  closeModal('task-modal-overlay');
+  render();
+}
+
+function confirmDeleteTask(id) {
+  if(confirm('למחוק את המשימה?')) {
+    deleteTask(id);
+    render();
+  }
+}
+
+function openFixedTasksModal() {
+  renderFixedTasksList();
+  buildColorPicker('ft-color-picker', state.ftSelectedColor);
+  state.ftSelectedDays = new Set([0]);
+  updateDowPicker();
+  switchTab('list');
+  openModal('fixed-modal-overlay');
+}
+
+function renderFixedTasksList() {
+  const list = document.getElementById('fixed-tasks-list');
+  if(!list) return;
+  if(!state.fixedTasks.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📌</div><p>אין משימות קבועות. הוסף אחת!</p></div>`;
+    return;
+  }
+  const recurrenceLabels = { weekly:'שבועי', daily:'יומי', biweekly:'דו-שבועי', monthly:'חודשי' };
+  const dowLabels = ['ראשון','שני','שלישי','רביעי','חמישי'];
+  list.innerHTML = `<div class="fixed-task-list">${
+    state.fixedTasks.map(ft => {
+      const clsColor = ft.classification ? (CLASSIFICATION_COLORS[ft.classification]||'#888') : null;
+      const clsBadge = clsColor ? `<span style="font-size:0.68rem;padding:1px 6px;border-radius:8px;background:${clsColor}22;color:${clsColor};border:1px solid ${clsColor}44;margin-right:4px;">${ft.classification}</span>` : '';
+      return `
+      <div class="fixed-task-item">
+        <div style="width:12px;height:12px;border-radius:50%;background:${ft.color||DEFAULT_COLOR};flex-shrink:0"></div>
+        <div class="fixed-task-item-body">
+          <div class="fixed-task-item-title">${escHtml(ft.title)}</div>
+          <div class="fixed-task-item-sub">${clsBadge}${getRecurrenceLabel(ft)}</div>
+        </div>
+        <div class="fixed-task-actions">
+          <button class="task-action-btn" onclick="editFixedTask('${ft.id}')" title="ערוך">✏️</button>
+          <button class="task-action-btn delete" onclick="deleteFixedTask('${ft.id}');renderFixedTasksList()">🗑️</button>
+        </div>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+
+function getRecurrenceLabel(ft) {
+  const dowLabels = ['ראשון','שני','שלישי','רביעי','חמישי'];
+  if(ft.recurrence==='weekly') {
+    const days = ft.daysOfWeek || (ft.dayOfWeek !== undefined ? [ft.dayOfWeek] : []);
+    return `שבועי | ${days.map(d => 'יום ' + dowLabels[d]).join(', ')}`;
+  }
+  if(ft.recurrence==='biweekly') {
+    const days = ft.daysOfWeek || (ft.dayOfWeek !== undefined ? [ft.dayOfWeek] : []);
+    return `דו-שבועי | ${days.map(d => 'יום ' + dowLabels[d]).join(', ')}`;
+  }
+  if(ft.recurrence==='daily') return 'יומי';
+  if(ft.recurrence==='monthly_date') return `חודשי | ${ft.monthDay} לחודש`;
+  if(ft.recurrence==='yearly') return `שנתי | ${ft.yearlyDay} ל${HEB_MONTHS[ft.yearlyMonth]}`;
+  if(ft.recurrence==='specific_dates') return `תאריכים ספציפיים | ${(ft.specificDates||[]).length} תאריכים`;
+  return ft.recurrence;
+}
+
+function updateDowPicker() {
+  document.querySelectorAll('.dow-btn').forEach(btn => {
+    btn.classList.toggle('selected', state.ftSelectedDays.has(parseInt(btn.dataset.day)));
+  });
+}
+
+function editFixedTask(id) {
+  const ft = state.fixedTasks.find(f => f.id === id);
+  if(!ft) return;
+  state.editingFixedTaskId = id;
+  document.getElementById('ft-title').value = ft.title || '';
+  document.getElementById('ft-desc').value = ft.description || '';
+  document.getElementById('ft-recurrence').value = ft.recurrence || 'weekly';
+  document.getElementById('ft-recurrence').dispatchEvent(new Event('change'));
+  if(ft.recurrence==='weekly'||ft.recurrence==='biweekly') {
+    const days = ft.daysOfWeek || (ft.dayOfWeek !== undefined ? [ft.dayOfWeek] : [0]);
+    state.ftSelectedDays = new Set(days.map(Number));
+    updateDowPicker();
+  }
+  if(ft.recurrence==='monthly_date')
+    document.getElementById('ft-monthday').value = ft.monthDay ?? 1;
+  if(ft.recurrence==='yearly') {
+    document.getElementById('ft-yearly-month').value = ft.yearlyMonth ?? 0;
+    document.getElementById('ft-yearly-day').value = ft.yearlyDay ?? 1;
+  }
+  if(ft.recurrence==='specific_dates') {
+    state.ftSpecificDates = [...(ft.specificDates||[])];
+    const sdList = document.getElementById('ft-specific-dates-list');
+    sdList.innerHTML = '';
+    state.ftSpecificDates.forEach(val => {
+      const chip = document.createElement('span');
+      chip.style.cssText = 'background:var(--navy-dark);color:var(--gold-light);padding:4px 10px;border-radius:20px;font-size:0.78rem;cursor:pointer;';
+      chip.textContent = val + ' ✕';
+      chip.onclick = () => { state.ftSpecificDates = state.ftSpecificDates.filter(d=>d!==val); chip.remove(); };
+      sdList.appendChild(chip);
+    });
+  }
+  document.getElementById('ft-classification').value = ft.classification || '';
+  state.ftSelectedColor = ft.color || DEFAULT_COLOR;
+  buildColorPicker('ft-color-picker', state.ftSelectedColor);
+  document.getElementById('ft-save-btn').textContent = '💾 עדכן משימה קבועה';
+  switchTab('add');
+}
+
+function saveFixedTask() {
+  const title = document.getElementById('ft-title').value.trim();
+  if(!title) { showToast('נא להכניס כותרת', 'error'); return; }
+  const recurrence = document.getElementById('ft-recurrence').value;
+  const data = {
+    title,
+    description: document.getElementById('ft-desc').value.trim(),
+    recurrence,
+    color: state.ftSelectedColor,
+    classification: document.getElementById('ft-classification').value,
+  };
+  if(recurrence==='weekly'||recurrence==='biweekly') {
+    const days = [...state.ftSelectedDays].map(Number).sort((a,b)=>a-b);
+    if(!days.length) { showToast('נא לבחור לפחות יום אחד', 'error'); return; }
+    data.daysOfWeek = days;
+    data.dayOfWeek = days[0]; // backward compat
+  }
+  if(recurrence==='monthly_date')
+    data.monthDay = parseInt(document.getElementById('ft-monthday').value);
+  if(recurrence==='yearly') {
+    data.yearlyMonth = parseInt(document.getElementById('ft-yearly-month').value);
+    data.yearlyDay = parseInt(document.getElementById('ft-yearly-day').value);
+  }
+  if(recurrence==='specific_dates')
+    data.specificDates = state.ftSpecificDates || [];
+
+  if(state.editingFixedTaskId) {
+    const idx = state.fixedTasks.findIndex(f => f.id === state.editingFixedTaskId);
+    if(idx !== -1) state.fixedTasks[idx] = { ...state.fixedTasks[idx], ...data };
+    state.editingFixedTaskId = null;
+    saveLocal(); syncToFirebase();
+    showToast('משימה קבועה עודכנה', 'success');
+  } else {
+    addFixedTask(data);
+    showToast('משימה קבועה נוספה', 'success');
+  }
+
+  document.getElementById('ft-title').value = '';
+  document.getElementById('ft-desc').value = '';
+  document.getElementById('ft-classification').value = '';
+  state.ftSpecificDates = [];
+  state.ftSelectedDays = new Set([0]);
+  document.getElementById('ft-specific-dates-list').innerHTML = '';
+  document.getElementById('ft-save-btn').textContent = '💾 שמור משימה קבועה';
+  updateDowPicker();
+  renderFixedTasksList();
+  switchTab('list');
+  render();
+}
+
+function openSyncModal() {
+  document.getElementById('sync-code-display').textContent = state.syncCode || '----';
+  updateSyncModalStatus();
+  openModal('sync-modal-overlay');
+}
+
+function updateSyncModalStatus() {
+  const area = document.getElementById('sync-status-area');
+  if(!area) return;
+  const hasFbConfig = !!localStorage.getItem('wp_firebase_config');
+  if(state.connected) area.innerHTML = '<span class="status-badge ok">✓ מחובר ומסונכרן</span>';
+  else if(hasFbConfig) area.innerHTML = '<span class="status-badge warn">⚠️ Firebase מוגדר אך לא מחובר</span>';
+  else area.innerHTML = '<span class="status-badge warn">⚠️ Firebase לא מוגדר — עובד עם אחסון מקומי בלבד</span>';
+}
+
+function saveFirebaseConfig() {
+  const raw = document.getElementById('firebase-config-input').value.trim();
+  try {
+    const config = JSON.parse(raw);
+    if(!config.apiKey) throw new Error('Missing apiKey');
+    localStorage.setItem('wp_firebase_config', raw);
+    showToast('הגדרות Firebase נשמרו. טוען...', 'success');
+    setTimeout(() => location.reload(), 1000);
+  } catch(e) {
+    showToast('פורמט JSON שגוי', 'error');
+  }
+}
+
+function connectSyncCode() {
+  const code = document.getElementById('sync-code-input').value.trim().toUpperCase();
+  if(code.length < 4) { showToast('קוד לא תקין', 'error'); return; }
+  state.syncCode = code;
+  localStorage.setItem('wp_sync_code', code);
+  if(state.firebase) setupFirebaseListener();
+  document.getElementById('sync-code-display').textContent = state.syncCode;
+  showToast('קוד סנכרון עודכן', 'success');
+}
+
+function copySyncCode() {
+  navigator.clipboard.writeText(state.syncCode||'').then(() => showToast('קוד הועתק', 'success'));
+}
+
+function exportJSON() {
+  const data = { tasks: state.tasks, fixedTasks: state.fixedTasks, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `workplan_${formatDate(new Date())}.json`;
+  a.click();
+  showToast('הקובץ יוצא', 'success');
+}
+
+function importJSON(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.tasks) state.tasks = data.tasks;
+      if(data.fixedTasks) state.fixedTasks = data.fixedTasks;
+      saveLocal();
+      render();
+      showToast('הנתונים יובאו בהצלחה', 'success');
+      closeModal('sync-modal-overlay');
+    } catch { showToast('קובץ לא תקין', 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tabName));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id===`tab-${tabName}`));
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function isMobile() { return window.innerWidth <= 768; }
+
+function navigate(dir) {
+  if(state.view==='year') state.year += dir;
+  else if(state.view==='month') {
+    state.month += dir;
+    if(state.month<0) { state.month=11; state.year--; }
+    if(state.month>11) { state.month=0; state.year++; }
+  } else if(state.view==='week') {
+    if(isMobile()) {
+      const d = new Date(state.selectedDay);
+      d.setDate(d.getDate() + dir);
+      while(d.getDay()===5 || d.getDay()===6) d.setDate(d.getDate() + dir);
+      state.selectedDay = d;
+      state.weekStart = getWeekStart(d);
+    } else {
+      state.weekStart = new Date(state.weekStart);
+      state.weekStart.setDate(state.weekStart.getDate() + dir*7);
+    }
+  }
+  ensureHolidays();
+  render();
+}
+
+function goToMonth(year, month) {
+  state.view = 'month';
+  state.year = year;
+  state.month = month;
+  render();
+}
+
+function goToWeekFromDate(dateStr) {
+  state.view = 'week';
+  const d = parseDate(dateStr);
+  state.weekStart = getWeekStart(d);
+  state.selectedDay = d;
+  render();
+}
+
+function goToToday() {
+  const today = new Date();
+  state.year = today.getFullYear();
+  state.month = today.getMonth();
+  state.weekStart = getWeekStart(today);
+  state.selectedDay = today;
+  ensureHolidays();
+  render();
+}
+
+function setView(viewName) {
+  state.view = viewName;
+  render();
+}
+
+async function ensureHolidays() {
+  const years = new Set();
+  years.add(state.year);
+  if(state.view==='month' && state.month===11) years.add(state.year+1);
+  if(state.view==='month' && state.month===0) years.add(state.year-1);
+  for(const y of years) {
+    const cacheKey = `holidays_he_${y}`;
+    if(!localStorage.getItem(cacheKey)) await fetchHolidays(y);
+    else {
+      const cached = localStorage.getItem(cacheKey);
+      if(cached) Object.assign(state.holidays, JSON.parse(cached));
+    }
+  }
+  render();
+}
+
+// ============================================================
+// ATTACH LISTENERS
+// ============================================================
+function attachViewListeners() {
+  // Any dynamic content listeners can go here
+}
+
+function attachStaticListeners() {
+  // View pills
+  document.querySelectorAll('.view-pill').forEach(btn => {
+    btn.addEventListener('click', () => setView(btn.dataset.view));
+  });
+
+  // Nav
+  document.getElementById('btn-prev').addEventListener('click', () => navigate(-1));
+  document.getElementById('btn-next').addEventListener('click', () => navigate(1));
+  document.getElementById('btn-today').addEventListener('click', goToToday);
+
+  // Header actions
+  document.getElementById('btn-add-task').addEventListener('click', () => openAddTask(null));
+  document.getElementById('btn-fixed-tasks').addEventListener('click', openFixedTasksModal);
+  // print button now handled by togglePrintMenu() inline
+  document.addEventListener('click', e => {
+    const menu = document.getElementById('print-menu');
+    if(menu && !menu.closest('div').contains(e.target)) menu.style.display = 'none';
+  });
+  document.getElementById('btn-sync').addEventListener('click', openSyncModal);
+
+  // Task modal
+  document.getElementById('task-modal-close').addEventListener('click', () => closeModal('task-modal-overlay'));
+  document.getElementById('task-cancel-btn').addEventListener('click', () => closeModal('task-modal-overlay'));
+  document.getElementById('task-save-btn').addEventListener('click', saveTask);
+  document.getElementById('task-delete-btn').addEventListener('click', () => {
+    if(state.editingTaskId && confirm('למחוק את המשימה?')) {
+      deleteTask(state.editingTaskId);
+      closeModal('task-modal-overlay');
+      render();
+    }
+  });
+  document.getElementById('task-title-input').addEventListener('keydown', e => {
+    if(e.key==='Enter') saveTask();
+  });
+
+  // Fixed tasks modal
+  document.getElementById('fixed-modal-close').addEventListener('click', () => {
+    state.editingFixedTaskId = null;
+    document.getElementById('ft-save-btn').textContent = '💾 שמור משימה קבועה';
+    closeModal('fixed-modal-overlay');
+  });
+  document.getElementById('ft-save-btn').addEventListener('click', saveFixedTask);
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(btn.dataset.tab === 'add' && !state.editingFixedTaskId) {
+        // clear form when switching to add tab (not edit)
+        document.getElementById('ft-title').value = '';
+        document.getElementById('ft-desc').value = '';
+        document.getElementById('ft-classification').value = '';
+        document.getElementById('ft-specific-dates-list').innerHTML = '';
+        state.ftSpecificDates = [];
+      }
+      if(btn.dataset.tab === 'list') {
+        state.editingFixedTaskId = null;
+        document.getElementById('ft-save-btn').textContent = '💾 שמור משימה קבועה';
+      }
+      switchTab(btn.dataset.tab);
+    });
+  });
+  document.getElementById('ft-recurrence').addEventListener('change', e => {
+    const v = e.target.value;
+    document.getElementById('ft-dow-group').style.display = ['weekly','biweekly'].includes(v) ? '' : 'none';
+    document.getElementById('ft-monthday-group').style.display = v==='monthly_date' ? '' : 'none';
+    document.getElementById('ft-yearly-group').style.display = v==='yearly' ? '' : 'none';
+    document.getElementById('ft-specific-group').style.display = v==='specific_dates' ? '' : 'none';
+    const hint = document.getElementById('ft-dow-hint');
+    if(hint) hint.textContent = v==='biweekly' ? '(יום אחד בלבד)' : '(ניתן לבחור מספר ימים)';
+    if(v==='biweekly' && state.ftSelectedDays.size > 1) {
+      state.ftSelectedDays = new Set([[...state.ftSelectedDays][0]]);
+      updateDowPicker();
+    }
+  });
+
+  document.querySelectorAll('.dow-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const day = parseInt(btn.dataset.day);
+      const isBiweekly = document.getElementById('ft-recurrence').value === 'biweekly';
+      if(isBiweekly) {
+        state.ftSelectedDays = new Set([day]);
+      } else {
+        if(state.ftSelectedDays.has(day)) {
+          if(state.ftSelectedDays.size > 1) state.ftSelectedDays.delete(day);
+        } else {
+          state.ftSelectedDays.add(day);
+        }
+      }
+      updateDowPicker();
+    });
+  });
+  state.ftSpecificDates = [];
+  document.getElementById('ft-add-specific-date').addEventListener('click', () => {
+    const val = document.getElementById('ft-specific-date-input').value;
+    if(!val) return;
+    if(!state.ftSpecificDates) state.ftSpecificDates = [];
+    if(state.ftSpecificDates.includes(val)) return;
+    state.ftSpecificDates.push(val);
+    const list = document.getElementById('ft-specific-dates-list');
+    const chip = document.createElement('span');
+    chip.style.cssText = 'background:var(--navy-dark);color:var(--gold-light);padding:4px 10px;border-radius:20px;font-size:0.78rem;cursor:pointer;';
+    chip.textContent = val + ' ✕';
+    chip.onclick = () => { state.ftSpecificDates = state.ftSpecificDates.filter(d=>d!==val); chip.remove(); };
+    list.appendChild(chip);
+    document.getElementById('ft-specific-date-input').value = '';
+  });
+
+  // Sync modal
+  document.getElementById('sync-modal-close').addEventListener('click', () => closeModal('sync-modal-overlay'));
+  document.getElementById('copy-sync-code').addEventListener('click', copySyncCode);
+  document.getElementById('btn-connect-sync').addEventListener('click', connectSyncCode);
+  document.getElementById('btn-save-firebase').addEventListener('click', saveFirebaseConfig);
+  document.getElementById('btn-export-json').addEventListener('click', exportJSON);
+  document.getElementById('import-json-input').addEventListener('change', e => {
+    if(e.target.files[0]) importJSON(e.target.files[0]);
+  });
+
+  // Search
+  document.getElementById('search-input').addEventListener('input', e => {
+    state.searchQuery = e.target.value.trim();
+    render();
+  });
+
+  // Close modals on overlay click
+  ['task-modal-overlay','fixed-modal-overlay','sync-modal-overlay','event-modal-overlay'].forEach(id => {
+    document.getElementById(id).addEventListener('click', e => {
+      if(e.target.id===id) closeModal(id);
+    });
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape') {
+      ['task-modal-overlay','fixed-modal-overlay','sync-modal-overlay','event-modal-overlay'].forEach(closeModal);
+    }
+    if((e.metaKey||e.ctrlKey) && e.key==='n') {
+      e.preventDefault();
+      openAddTask(state.view==='week' ? formatDate(isMobile() ? state.selectedDay : state.weekStart) : null);
+    }
+    if((e.metaKey||e.ctrlKey) && e.key==='p') {
+      e.preventDefault();
+      printWeekly();
+    }
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  loadLocal();
+  attachStaticListeners();
+  buildColorPicker('task-color-picker', state.selectedColor);
+  buildColorPicker('ft-color-picker', state.ftSelectedColor);
+
+  // On mobile, default to week (single-day) view
+  if(isMobile()) {
+    state.view = 'week';
+    state.selectedDay = new Date();
+    state.weekStart = getWeekStart(state.selectedDay);
+  }
+
+  // Load holidays for current year
+  await fetchHolidays(state.year);
+  if(state.month >= 10) await fetchHolidays(state.year+1);
+
+  // Init Firebase if config exists
+  initFirebase();
+
+  // Initial render
+  render();
+}
+
+// Start
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+</body>
+</html>
