@@ -1111,7 +1111,6 @@
     @media(max-width: 768px) {
       header { padding: 0; }
 
-      /* ── Row 1: logo + title + action icons in one compact line ── */
       .header-main {
         flex-wrap: wrap;
         padding: 8px 12px 0;
@@ -1119,7 +1118,9 @@
         align-items: center;
       }
 
+      /* ── Row 1: logo (right) + actions (left) ── */
       .logo-area {
+        order: 1;
         flex: 1;
         min-width: 0;
         gap: 6px;
@@ -1127,13 +1128,13 @@
         align-items: center;
       }
       .logo-img.logo-916 { display: none; }
-      .logo-img { height: 26px !important; }
+      .logo-img { height: 28px !important; }
       .logo-text { gap: 1px; }
-      .logo-text h1 { font-size: 0.82rem; white-space: nowrap; line-height: 1.2; }
-      .logo-text p { font-size: 0.65rem; opacity: 0.75; display: block !important; white-space: nowrap; }
+      .logo-text h1 { font-size: 0.85rem; white-space: nowrap; line-height: 1.2; }
+      .logo-text p { font-size: 0.66rem; opacity: 0.75; display: block !important; white-space: nowrap; }
 
-      /* Action buttons: compact icon circles */
       .header-actions {
+        order: 2;
         flex-shrink: 0;
         flex-wrap: nowrap;
         overflow-x: auto;
@@ -1172,8 +1173,9 @@
         border: none;
       }
 
-      /* ── Row 2: view pills + date nav — all in ONE horizontal scrollable line ── */
+      /* ── Row 2: ניווט מלא — pills + חצים + תאריך + היום ── */
       .header-center {
+        order: 3;
         width: 100%;
         flex: none;
         flex-direction: row;
@@ -1205,12 +1207,8 @@
         background: transparent;
         white-space: nowrap;
       }
-      .view-pill.active {
-        background: var(--gold);
-        color: var(--navy-dark);
-      }
+      .view-pill.active { background: var(--gold); color: var(--navy-dark); }
 
-      /* Date nav — compact, inline */
       .date-nav { gap: 6px; flex-shrink: 0; align-items: center; }
       .nav-btn { width: 28px; height: 28px; font-size: 1rem; flex-shrink: 0; }
       #current-period-label { font-size: 0.78rem; min-width: 0; text-align: center; white-space: nowrap; }
