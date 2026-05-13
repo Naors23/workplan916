@@ -2220,7 +2220,18 @@ function isEventStart(e, dk) {
 function togglePrintMenu(e) {
   e.stopPropagation();
   const menu = document.getElementById('print-menu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  const isHidden = menu.style.display === 'none' || menu.style.display === '';
+  if (isHidden) {
+    const btn = document.getElementById('btn-print');
+    const rect = btn.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = (rect.bottom + 6) + 'px';
+    menu.style.left = Math.max(8, rect.left - 100) + 'px';
+    menu.style.right = 'auto';
+    menu.style.display = 'block';
+  } else {
+    menu.style.display = 'none';
+  }
 }
 
 function printWeekly() {
