@@ -2396,15 +2396,24 @@ function handleAuthStateChange(user) {
 
     // Load unit preference
     if(state.firebase) {
+      // טען מ-localStorage מיד (ללא המתנה)
+      const cachedUnit = localStorage.getItem('userUnit');
+      const cachedSubtitle = localStorage.getItem('userCustomSubtitle');
+      if(cachedUnit && UNITS[cachedUnit]) {
+        applyUnit(cachedUnit, cachedSubtitle || 'פלגת 916');
+      }
+
+      // אז סנכרן מ-Firestore
       state.firebase.collection('users').doc(user.uid).get().then(doc => {
         const data = doc.data() || {};
         if(data.unit) {
+          localStorage.setItem('userUnit', data.unit);
+          localStorage.setItem('userCustomSubtitle', data.customSubtitle || 'פלגת 916');
           applyUnit(data.unit, data.customSubtitle || 'פלגת 916');
-        } else {
-          applyUnit('אשדוד', 'פלגת 916');
+        } else if(!cachedUnit) {
           showUnitSelector();
         }
-      }).catch(() => { applyUnit('אשדוד', 'פלגת 916'); showUnitSelector(); });
+      }).catch(() => { if(!cachedUnit) { applyUnit('אשדוד', 'פלגת 916'); showUnitSelector(); } });
     }
 
     // Setup listener for this user's data
@@ -2460,17 +2469,18 @@ function selectUnit(unitKey) {
   const unit = UNITS[unitKey];
   if(!unit) return;
 
-  // Close modal
   document.getElementById('unit-modal').style.display = 'none';
 
-  // Apply logos and subtitle
-  applyUnit(unitKey, unit.label);
+  const customText = 'פלגת 916';
+  applyUnit(unitKey, customText);
 
-  // Save to Firestore
+  // שמירה ב-localStorage וב-Firestore
+  localStorage.setItem('userUnit', unitKey);
+  localStorage.setItem('userCustomSubtitle', customText);
   if(state.firebase && state.currentUser) {
     state.firebase.collection('users').doc(state.currentUser.uid).set({
       unit: unitKey,
-      customSubtitle: unit.label
+      customSubtitle: customText
     }, { merge: true }).catch(()=>{});
   }
 }
@@ -2516,6 +2526,7 @@ function saveSubtitle() {
   if(!val) return;
   document.getElementById('subtitle-custom').textContent = val;
   document.getElementById('subtitle-modal').style.display = 'none';
+  localStorage.setItem('userCustomSubtitle', val);
   if(state.firebase && state.currentUser) {
     state.firebase.collection('users').doc(state.currentUser.uid).set({
       customSubtitle: val
