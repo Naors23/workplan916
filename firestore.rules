@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Admin email
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'naorsadi@gmail.com';
+    }
+
+    // Logged in user
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    // Tasks - all logged in users can read/write
+    match /tasks/{docId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    // Fixed tasks - all logged in users can read/write
+    match /fixedTasks/{docId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    // Events - all logged in users can read/write
+    match /events/{docId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    // Completed instances - all logged in users can read/write
+    match /completedInstances/{docId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    // Not done instances - all logged in users can read/write
+    match /notDoneInstances/{docId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    // Shared tasks - all logged in users can read/write
+    match /sharedTasks/{docId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    // Users - user can write own doc, only admin can read all
+    match /users/{userId} {
+      allow write: if isLoggedIn() && request.auth.uid == userId;
+      allow read: if isAdmin() || (isLoggedIn() && request.auth.uid == userId);
+      allow delete: if isAdmin();
+    }
+
+    // Unit settings - user can read/write own
+    match /userSettings/{userId} {
+      allow read, write: if isLoggedIn() && request.auth.uid == userId;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

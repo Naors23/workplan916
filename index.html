@@ -2613,36 +2613,89 @@ function syncToFirebase() {
 // ADMIN PANEL
 // ============================================================
 function openAdminPanel() {
+  if(state.currentUser?.email !== ADMIN_EMAIL) return;
   document.getElementById('admin-modal-overlay').style.display = 'flex';
   loadAllUsers();
 }
 
 function loadAllUsers() {
   if(!state.firebase) return;
+  if(state.currentUser?.email !== ADMIN_EMAIL) return;
   const list = document.getElementById('admin-users-list');
-  list.innerHTML = 'טוען...';
+  list.textContent = 'טוען...';
   state.firebase.collection('users').get().then(snapshot => {
-    if(snapshot.empty) { list.innerHTML = '<p style="color:#94A3B8">אין משתמשים עדיין</p>'; return; }
-    list.innerHTML = '';
+    list.textContent = '';
+    if(snapshot.empty) {
+      const p = document.createElement('p');
+      p.style.color = '#94A3B8';
+      p.textContent = 'אין משתמשים עדיין';
+      list.appendChild(p);
+      return;
+    }
     snapshot.forEach(doc => {
       const u = doc.data();
       const div = document.createElement('div');
       div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid #E2E8F0;';
-      div.innerHTML = `
-        ${u.photoURL ? `<img src="${u.photoURL}" style="width:36px;height:36px;border-radius:50%;">` : '<div style="width:36px;height:36px;border-radius:50%;background:#144272;display:flex;align-items:center;justify-content:center;color:#C9A84C;font-weight:800;">👤</div>'}
-        <div style="flex:1;">
-          <div style="font-weight:700;color:#1E293B;font-size:0.9rem;">${u.displayName||'ללא שם'}</div>
-          <div style="font-size:0.78rem;color:#94A3B8;">${u.email}</div>
-          <div style="font-size:0.72rem;color:#CBD5E1;">כניסה אחרונה: ${u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('he-IL') : '-'}</div>
-        </div>
-        ${u.email !== ADMIN_EMAIL ? `<button onclick="deleteUserFromApp('${doc.id}','${u.displayName||u.email}')" style="background:#FEE2E2;color:#DC2626;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.8rem;font-weight:700;">מחק</button>` : '<span style="font-size:0.75rem;color:#C9A84C;font-weight:700;">מנהל</span>'}
-      `;
+
+      // Avatar
+      if(u.photoURL) {
+        const img = document.createElement('img');
+        img.src = u.photoURL;
+        img.style.cssText = 'width:36px;height:36px;border-radius:50%;';
+        div.appendChild(img);
+      } else {
+        const av = document.createElement('div');
+        av.style.cssText = 'width:36px;height:36px;border-radius:50%;background:#144272;display:flex;align-items:center;justify-content:center;color:#C9A84C;font-weight:800;';
+        av.textContent = '👤';
+        div.appendChild(av);
+      }
+
+      // Info
+      const info = document.createElement('div');
+      info.style.flex = '1';
+      const name = document.createElement('div');
+      name.style.cssText = 'font-weight:700;color:#1E293B;font-size:0.9rem;';
+      name.textContent = u.displayName || 'ללא שם';
+      const email = document.createElement('div');
+      email.style.cssText = 'font-size:0.78rem;color:#94A3B8;';
+      email.textContent = u.email;
+      const lastLogin = document.createElement('div');
+      lastLogin.style.cssText = 'font-size:0.72rem;color:#CBD5E1;';
+      lastLogin.textContent = 'כניסה אחרונה: ' + (u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('he-IL') : '-');
+      info.appendChild(name);
+      info.appendChild(email);
+      info.appendChild(lastLogin);
+      div.appendChild(info);
+
+      // Delete / Admin badge
+      if(u.email !== ADMIN_EMAIL) {
+        const btn = document.createElement('button');
+        btn.style.cssText = 'background:#FEE2E2;color:#DC2626;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.8rem;font-weight:700;';
+        btn.textContent = 'מחק';
+        btn.dataset.uid = doc.id;
+        btn.dataset.name = u.displayName || u.email;
+        btn.addEventListener('click', () => deleteUserFromApp(btn.dataset.uid, btn.dataset.name));
+        div.appendChild(btn);
+      } else {
+        const badge = document.createElement('span');
+        badge.style.cssText = 'font-size:0.75rem;color:#C9A84C;font-weight:700;';
+        badge.textContent = 'מנהל';
+        div.appendChild(badge);
+      }
+
       list.appendChild(div);
     });
-  }).catch(e => { list.innerHTML = '<p style="color:#EF4444">שגיאה בטעינה</p>'; });
+  }).catch(() => {
+    list.textContent = '';
+    const p = document.createElement('p');
+    p.style.color = '#EF4444';
+    p.textContent = 'שגיאה בטעינה';
+    list.appendChild(p);
+  });
 }
 
 function deleteUserFromApp(uid, name) {
+  if(state.currentUser?.email !== ADMIN_EMAIL) return;
   if(!confirm(`למחוק את ${name}? הנתונים שלו יישארו אבל הוא לא יוכל להיכנס מחדש.`)) return;
   state.firebase.collection('users').doc(uid).delete().then(() => {
     showToast('המשתמש נמחק', 'success');
@@ -2709,7 +2762,12 @@ function showToast(msg, type='info') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   const icons = { success:'✓', error:'✕', info:'ℹ' };
-  toast.innerHTML = `<span>${icons[type]||'ℹ'}</span> ${msg}`;
+  const icon = document.createElement('span');
+  icon.textContent = icons[type] || 'ℹ';
+  const text = document.createElement('span');
+  text.textContent = msg;
+  toast.appendChild(icon);
+  toast.appendChild(text);
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
