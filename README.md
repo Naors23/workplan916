@@ -103,7 +103,15 @@ git push
 - כניסה דרך Google Auth בלבד
 - כל פעולה מחייבת משתמש מחובר
 - הרשאות מנהל מוגדרות לפי email
-- מומלץ לבדוק ולעדכן את Firestore Security Rules ב-Firebase Console
+- Firestore Security Rules מוגדרים ופעילים
+- XSS מוגן בכל פאנל המנהל
+
+## ⚠️ Firestore Rules — חשוב
+
+הקובץ `firestore.rules` מכיל את חוקי האבטחה. אם צריך לאפס — הדבק את תוכנו ב:
+https://console.firebase.google.com/project/workplan-916/firestore/rules
+
+**Collections מורשים:** `workplans`, `tasks`, `fixedTasks`, `events`, `completedInstances`, `notDoneInstances`, `sharedTasks`, `users`, `userSettings`
 
 ---
 
