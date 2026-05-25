@@ -1,8 +1,7 @@
-const CACHE = 'wp916-v1';
-const ASSETS = ['/workplan916/', '/workplan916/index.html', '/workplan916/manifest.json'];
+const CACHE = 'wp916-v10';
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
@@ -13,14 +12,17 @@ self.addEventListener('activate', e => {
   );
 });
 
+// Network-first for everything — always get latest version
 self.addEventListener('fetch', e => {
-  if (e.request.mode === 'navigate') {
-    e.respondWith(
-      fetch(e.request).then(res => {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        if(res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
         return res;
-      }).catch(() => caches.match(e.request))
-    );
-  }
+      })
+      .catch(() => caches.match(e.request))
+  );
 });
