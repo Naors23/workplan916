@@ -58,6 +58,10 @@ service cloud.firestore {
       allow read, write: if isLoggedIn() && request.auth.uid == userId;
     }
 
+    match /scheduleItems/{userId} {
+      allow read, write: if isLoggedIn() && request.auth.uid == userId;
+    }
+
     // Deny everything else
     match /{document=**} {
       allow read, write: if false;
