@@ -4087,51 +4087,45 @@ document.addEventListener('DOMContentLoaded', init);
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
+// ── Service Worker ──
 if ('serviceWorker' in navigator) {
-  let newWorkerWaiting = null;
-
-  function showUpdateBanner() {
-    localStorage.setItem('wp_update_pending', '1');
-    const banner = document.getElementById('update-banner');
-    if (banner) banner.style.display = 'flex';
-  }
-
-  // אם הבאנר היה פעיל לפני סגירה — הצג שוב
-  if (localStorage.getItem('wp_update_pending') === '1') {
-    document.addEventListener('DOMContentLoaded', () => {
-      const banner = document.getElementById('update-banner');
-      if (banner) banner.style.display = 'flex';
-    });
-  }
-
-  navigator.serviceWorker.register('/workplan916/sw.js').then(reg => {
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          newWorkerWaiting = newWorker;
-          showUpdateBanner();
-        }
-      });
-    });
-
-    // אם כבר יש SW שממתין
-    if (reg.waiting && navigator.serviceWorker.controller) {
-      newWorkerWaiting = reg.waiting;
-      showUpdateBanner();
-    }
-  });
-
-  // כפתור עדכן
-  document.getElementById('btn-do-update').addEventListener('click', () => {
-    localStorage.removeItem('wp_update_pending');
-    if (newWorkerWaiting) {
-      newWorkerWaiting.postMessage('SKIP_WAITING');
-    }
-    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
-    setTimeout(() => location.reload(), 1000);
-  });
+  navigator.serviceWorker.register('/workplan916/sw.js');
 }
+
+// ── בדיקת גרסה כל 5 דקות ──
+const CURRENT_VERSION = '20260525-1';
+
+function checkForUpdate() {
+  fetch('/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.version !== CURRENT_VERSION) {
+        localStorage.setItem('wp_update_pending', '1');
+        const banner = document.getElementById('update-banner');
+        if (banner) banner.style.display = 'flex';
+      }
+    }).catch(() => {});
+}
+
+// בדוק מיד בטעינה ואז כל 5 דקות
+checkForUpdate();
+setInterval(checkForUpdate, 5 * 60 * 1000);
+
+// אם הבאנר היה פעיל לפני סגירה — הצג שוב
+if (localStorage.getItem('wp_update_pending') === '1') {
+  const banner = document.getElementById('update-banner');
+  if (banner) banner.style.display = 'flex';
+}
+
+// כפתור עדכן — מוחק קאש ומרענן
+document.getElementById('btn-do-update').addEventListener('click', () => {
+  localStorage.removeItem('wp_update_pending');
+  if ('caches' in window) {
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => location.reload(true));
+  } else {
+    location.reload(true);
+  }
+});
 </script>
 
 </body>
