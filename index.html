@@ -4090,25 +4090,46 @@ document.addEventListener('DOMContentLoaded', init);
 if ('serviceWorker' in navigator) {
   let newWorkerWaiting = null;
 
+  function showUpdateBanner() {
+    localStorage.setItem('wp_update_pending', '1');
+    const banner = document.getElementById('update-banner');
+    if (banner) banner.style.display = 'flex';
+  }
+
+  // אם הבאנר היה פעיל לפני סגירה — הצג שוב
+  if (localStorage.getItem('wp_update_pending') === '1') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const banner = document.getElementById('update-banner');
+      if (banner) banner.style.display = 'flex';
+    });
+  }
+
   navigator.serviceWorker.register('/workplan916/sw.js').then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
           newWorkerWaiting = newWorker;
-          const banner = document.getElementById('update-banner');
-          if (banner) banner.style.display = 'flex';
+          showUpdateBanner();
         }
       });
     });
+
+    // אם כבר יש SW שממתין
+    if (reg.waiting && navigator.serviceWorker.controller) {
+      newWorkerWaiting = reg.waiting;
+      showUpdateBanner();
+    }
   });
 
-  // כפתור עדכן — שולח SKIP_WAITING לSW ואז מרענן
+  // כפתור עדכן
   document.getElementById('btn-do-update').addEventListener('click', () => {
+    localStorage.removeItem('wp_update_pending');
     if (newWorkerWaiting) {
       newWorkerWaiting.postMessage('SKIP_WAITING');
     }
     navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+    setTimeout(() => location.reload(), 1000);
   });
 }
 </script>
