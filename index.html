@@ -1304,6 +1304,7 @@
         flex-shrink: 0;
       }
       .action-btn span { display: none; }
+      .action-btn span.always-show { display: inline; }
       #user-info {
         padding: 0;
         background: transparent;
@@ -1690,7 +1691,7 @@
 
     <div class="header-actions">
       <button class="action-btn" id="btn-add-schedule" title="הוספת לוז" onclick="openScheduleModal()">
-        🗒️ <span>הוספת לו"ז</span>
+        🗒️ <span class="always-show">לו"ז +</span>
       </button>
       <button class="action-btn" id="btn-fixed-tasks" title="משימות קבועות">
         📌 <span>קבועות</span>
