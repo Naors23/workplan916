@@ -1304,7 +1304,6 @@
         flex-shrink: 0;
       }
       .action-btn span { display: none; }
-      .action-btn span.always-show { display: inline; }
       #user-info {
         padding: 0;
         background: transparent;
@@ -1690,9 +1689,6 @@
     </div>
 
     <div class="header-actions">
-      <button class="action-btn" id="btn-add-schedule" title="הוספת לוז" onclick="openScheduleModal()">
-        🗒️ <span class="always-show">לו"ז +</span>
-      </button>
       <button class="action-btn" id="btn-fixed-tasks" title="משימות קבועות">
         📌 <span>קבועות</span>
       </button>
@@ -1735,6 +1731,7 @@
     <button class="filter-btn" data-filter="done" onclick="setFilter('done')">בוצע ✓</button>
     <span id="filter-counter" style="color:rgba(255,255,255,0.5);font-size:0.78rem;display:none;"></span>
     <button class="schedule-btn-toggle active" id="btn-schedule-toggle" onclick="toggleScheduleView()" title="הצג/הסתר לו&quot;ז">📋 לו"ז</button>
+    <button class="schedule-btn-toggle" id="btn-add-schedule" onclick="openScheduleModal()" style="background:rgba(37,99,235,0.25);border-color:rgba(37,99,235,0.5);">＋ הוספת לו"ז</button>
   </div>
 </header>
 
