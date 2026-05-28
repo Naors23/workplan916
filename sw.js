@@ -1,7 +1,7 @@
-const CACHE = 'wp916-v10';
+const CACHE = 'wp916-v11';
 
 self.addEventListener('install', e => {
-  self.skipWaiting();
+  // לא קוראים skipWaiting כאן — ממתין עד שהמשתמש לוחץ "עדכן"
 });
 
 self.addEventListener('activate', e => {
@@ -12,7 +12,12 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Network-first for everything — always get latest version
+// מאזין להודעת SKIP_WAITING מהעמוד
+self.addEventListener('message', e => {
+  if(e.data === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// Network-first — תמיד גרסה עדכנית
 self.addEventListener('fetch', e => {
   e.respondWith(
     fetch(e.request)
