@@ -1762,22 +1762,58 @@
 <!-- ======================== SCHEDULE MODAL ======================== -->
 <div id="schedule-modal-overlay" onclick="if(event.target===this)closeScheduleModal()">
   <div id="schedule-modal">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <h2 style="font-size:1.2rem;color:#0A2647;font-weight:800;">📋 הוספת לו"ז</h2>
       <button onclick="closeScheduleModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#94A3B8;">✕</button>
     </div>
-    <p style="font-size:0.82rem;color:#64748B;line-height:1.5;">
-      הדבק את הודעת הלו"ז מהוואטסאפ. המערכת תסנן אוטומטית רק את מה שרלוונטי אליך ותשבץ לתאריך הנכון.
-    </p>
-    <textarea id="schedule-text-input" placeholder="הדבק כאן את הלוז מהוואטסאפ...&#10;&#10;לדוגמה:&#10;לוז מפלג ליום חמישי 28/05&#10;0600-0900 רצים לזכרם (כולם)&#10;1000-1100 ישיבת סגל (כל הסגל)"></textarea>
-    <div id="schedule-preview" style="display:none;margin-bottom:14px;">
-      <div style="font-size:0.82rem;font-weight:700;color:#1D4ED8;margin-bottom:8px;">תצוגה מקדימה — פריטים רלוונטיים:</div>
-      <div id="schedule-preview-list"></div>
+
+    <!-- טאבים -->
+    <div style="display:flex;gap:0;margin-bottom:18px;border-radius:10px;overflow:hidden;border:1.5px solid #E2E8F0;">
+      <button id="sched-tab-paste" onclick="switchSchedTab('paste')" style="flex:1;padding:10px;font-weight:700;font-size:0.88rem;border:none;cursor:pointer;background:#1D4ED8;color:white;">הדבקת הודעה</button>
+      <button id="sched-tab-manual" onclick="switchSchedTab('manual')" style="flex:1;padding:10px;font-weight:700;font-size:0.88rem;border:none;cursor:pointer;background:#F8FAFC;color:#64748B;">הוספה ידנית</button>
     </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button onclick="previewSchedule()" style="background:#EFF6FF;color:#1D4ED8;border:1.5px solid #93C5FD;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.9rem;">🔍 תצוגה מקדימה</button>
-      <button onclick="saveScheduleFromText()" style="background:#1D4ED8;color:white;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.9rem;">✓ שמור לוז</button>
+
+    <!-- הדבקת הודעה -->
+    <div id="sched-pane-paste">
+      <p style="font-size:0.82rem;color:#64748B;line-height:1.5;margin-bottom:10px;">הדבק את הודעת הלו"ז מהוואטסאפ. המערכת תסנן אוטומטית רק את מה שרלוונטי אליך.</p>
+      <textarea id="schedule-text-input" placeholder="הדבק כאן את הלוז מהוואטסאפ...&#10;&#10;לדוגמה:&#10;לוז מפלג ליום חמישי 28/05&#10;0600-0900 רצים לזכרם (כולם)&#10;1000-1100 ישיבת סגל (כל הסגל)"></textarea>
+      <div id="schedule-preview" style="display:none;margin-bottom:14px;">
+        <div style="font-size:0.82rem;font-weight:700;color:#1D4ED8;margin-bottom:8px;">תצוגה מקדימה — פריטים רלוונטיים:</div>
+        <div id="schedule-preview-list"></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="previewSchedule()" style="background:#EFF6FF;color:#1D4ED8;border:1.5px solid #93C5FD;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.9rem;">🔍 תצוגה מקדימה</button>
+        <button onclick="saveScheduleFromText()" style="background:#1D4ED8;color:white;border:none;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:0.9rem;">✓ שמור לוז</button>
+      </div>
     </div>
+
+    <!-- הוספה ידנית -->
+    <div id="sched-pane-manual" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <label style="font-size:0.82rem;font-weight:700;color:#0A2647;display:block;margin-bottom:4px;">תאריך</label>
+          <input type="date" id="sched-manual-date" style="width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:8px 12px;font-size:0.9rem;outline:none;">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;">
+            <label style="font-size:0.82rem;font-weight:700;color:#0A2647;display:block;margin-bottom:4px;">שעת התחלה</label>
+            <input type="time" id="sched-manual-start" style="width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:8px 12px;font-size:0.9rem;outline:none;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:0.82rem;font-weight:700;color:#0A2647;display:block;margin-bottom:4px;">שעת סיום</label>
+            <input type="time" id="sched-manual-end" style="width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:8px 12px;font-size:0.9rem;outline:none;">
+          </div>
+        </div>
+        <div>
+          <label style="font-size:0.82rem;font-weight:700;color:#0A2647;display:block;margin-bottom:4px;">כותרת</label>
+          <input type="text" id="sched-manual-title" placeholder="תיאור הפעילות..." style="width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:8px 12px;font-size:0.9rem;outline:none;direction:rtl;">
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:18px;">
+        <button onclick="saveScheduleManual()" style="background:#1D4ED8;color:white;border:none;border-radius:10px;padding:10px 24px;font-weight:700;cursor:pointer;font-size:0.9rem;">✓ הוסף</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2966,6 +3002,43 @@ function openScheduleModal() {
   document.getElementById('schedule-modal-overlay').style.display = 'flex';
   document.getElementById('schedule-text-input').value = '';
   document.getElementById('schedule-preview').style.display = 'none';
+  // set today's date as default
+  const today = formatDate(new Date());
+  const dateInput = document.getElementById('sched-manual-date');
+  if(dateInput) dateInput.value = today;
+  switchSchedTab('paste');
+}
+
+function switchSchedTab(tab) {
+  document.getElementById('sched-pane-paste').style.display = tab === 'paste' ? 'block' : 'none';
+  document.getElementById('sched-pane-manual').style.display = tab === 'manual' ? 'block' : 'none';
+  document.getElementById('sched-tab-paste').style.background = tab === 'paste' ? '#1D4ED8' : '#F8FAFC';
+  document.getElementById('sched-tab-paste').style.color = tab === 'paste' ? 'white' : '#64748B';
+  document.getElementById('sched-tab-manual').style.background = tab === 'manual' ? '#1D4ED8' : '#F8FAFC';
+  document.getElementById('sched-tab-manual').style.color = tab === 'manual' ? 'white' : '#64748B';
+}
+
+function saveScheduleManual() {
+  const date = document.getElementById('sched-manual-date').value;
+  const start = document.getElementById('sched-manual-start').value;
+  const end = document.getElementById('sched-manual-end').value;
+  const title = document.getElementById('sched-manual-title').value.trim();
+  if(!date || !start || !title) { showToast('נא למלא תאריך, שעה וכותרת', 'error'); return; }
+  const item = {
+    id: uuid(),
+    date,
+    startTime: start,
+    endTime: end || start,
+    title,
+    done: false,
+    uid: state.currentUser?.uid || 'local',
+    createdAt: new Date().toISOString()
+  };
+  state.scheduleItems = [...(state.scheduleItems||[]), item];
+  saveScheduleToFirebase();
+  closeScheduleModal();
+  render();
+  showToast('פריט נוסף ללוז', 'success');
 }
 
 function closeScheduleModal() {
@@ -4103,7 +4176,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260525-1';
+const CURRENT_VERSION = '20260529-1';
 
 function checkForUpdate() {
   fetch('/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
