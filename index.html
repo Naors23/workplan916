@@ -1732,6 +1732,7 @@
     <span id="filter-counter" style="color:rgba(255,255,255,0.5);font-size:0.78rem;display:none;"></span>
     <button class="schedule-btn-toggle active" id="btn-schedule-toggle" onclick="toggleScheduleView()" title="הצג/הסתר לו&quot;ז">📋 לו"ז</button>
     <button class="schedule-btn-toggle" id="btn-add-schedule" onclick="openScheduleModal()" style="background:rgba(37,99,235,0.25);border-color:rgba(37,99,235,0.5);">＋ הוספת לו"ז</button>
+    <button class="schedule-btn-toggle active" id="btn-toggle-tasks" onclick="toggleTasksView()" title="הצג/הסתר משימות">📋 הסתר משימות</button>
   </div>
 </header>
 
@@ -2043,6 +2044,7 @@ let state = {
   filterStatus: 'all',
   scheduleItems: [],
   showSchedule: true,
+  showTasks: true,
 };
 
 // ============================================================
@@ -3042,6 +3044,16 @@ function toggleScheduleView() {
   render();
 }
 
+function toggleTasksView() {
+  state.showTasks = !state.showTasks;
+  const btn = document.getElementById('btn-toggle-tasks');
+  if(btn) {
+    btn.classList.toggle('active', state.showTasks);
+    btn.textContent = state.showTasks ? '📋 הסתר משימות' : '📋 הצג משימות';
+  }
+  render();
+}
+
 function renderScheduleForDay(dk) {
   if(!state.showSchedule) return '';
   const uid = state.currentUser?.uid || 'local';
@@ -3376,7 +3388,7 @@ function renderDayColumn(day) {
 
   const scheduleHTML = renderScheduleForDay(dk);
 
-  const tasksHTML = tasks.length
+  const tasksHTML = !state.showTasks ? '' : tasks.length
     ? tasks.map(t => renderTaskCard(t, dk)).join('')
     : `<div class="empty-state"><div class="empty-icon">📋</div><p>אין משימות</p></div>`;
 
