@@ -2928,7 +2928,7 @@ function updateSyncDot(connected) {
 // SCHEDULE — LO"Z
 // ============================================================
 const SCHEDULE_KEYWORDS = [
-  'נגד לוגיסטיקה 916', 'נגד לוג', 'נגד אפסנאות',
+  'נגד לוגיסטיקה 916', 'נגד לוג', 'נגד אפסנאות', 'נ אפסנאות',
   'נאור סעדי', 'נאור',
   'לוגיסטיקה',
   'כל הסגל', 'כל סגל', 'שאר הסגל', 'כולם'
@@ -2952,12 +2952,12 @@ function parseDateFromHeader(line) {
 }
 
 function parseTimeRange(line) {
-  // Matches 0600-0900 or 06:00-09:00
-  const m = line.match(/^(\d{2}):?(\d{2})\s*[-–]\s*(\d{2}):?(\d{2})/);
+  // Matches 0600-0900 or 06:00-09:00 or 6:00-9:00, anywhere in line
+  const m = line.match(/(\d{1,2}):?(\d{2})\s*[-–]\s*(\d{1,2}):?(\d{2})/);
   if(!m) return null;
   return {
-    start: `${m[1]}:${m[2]}`,
-    end: `${m[3]}:${m[4]}`
+    start: `${m[1].padStart(2,'0')}:${m[2]}`,
+    end: `${m[3].padStart(2,'0')}:${m[4]}`
   };
 }
 
