@@ -2967,14 +2967,12 @@ function parseTimeRange(line) {
 // Split pasted text into individual message blocks
 function splitIntoMessageBlocks(text) {
   const BLOCK_STARTER = /^(\*.*\*|.*שינוי מועד|.*שינוי שעות|.*חוזר מנ)/;
-  const lines = text.split('\n');
+  const lines = text.split('\n').map(l => l.trim());
   const blocks = [];
   let current = [];
-  for(const rawLine of lines) {
-    const line = rawLine.trim();
-    if(!line) {
-      if(current.length > 0) { blocks.push(current.join('\n')); current = []; }
-    } else if(BLOCK_STARTER.test(line) && current.length > 0) {
+  for(const line of lines) {
+    if(!line) continue; // שורות ריקות מתעלמים בתוך הודעה
+    if(BLOCK_STARTER.test(line) && current.length > 0) {
       blocks.push(current.join('\n')); current = [line];
     } else {
       current.push(line);
