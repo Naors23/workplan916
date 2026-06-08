@@ -2929,18 +2929,22 @@ function updateSyncDot(connected) {
 // ============================================================
 const SCHEDULE_KEYWORDS = [
   'נגד לוגיסטיקה 916', 'נגד לוג', 'נגד אפסנאות', 'נ אפסנאות',
-  'נאור סעדי', 'נאור',
+  'נאור סעדי', 'נאור', 'נאור אפסנאות',
+  'נ לוג 916',
   'לוגיסטיקה',
   'כל הסגל', 'כל סגל', 'שאר הסגל', 'כולם'
 ];
 
+const TITLE_SKIP = [
+  /שינוי מועד/, /שינוי שעות/, /חוזר מנ/, /מוודאת/, /חדש ל/,
+  /אשרו קבלה/, /📍/, /מזומנים/, /^\*.*\*$/
+];
+
 function isScheduleRelevant(line) {
-  const l = line;
-  return SCHEDULE_KEYWORDS.some(kw => l.includes(kw));
+  return SCHEDULE_KEYWORDS.some(kw => line.includes(kw));
 }
 
 function parseDateFromHeader(line) {
-  // Match dd/mm or dd/mm/yyyy
   const m = line.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
   if(!m) return null;
   const day = parseInt(m[1]);
@@ -2952,7 +2956,6 @@ function parseDateFromHeader(line) {
 }
 
 function parseTimeRange(line) {
-  // Matches 0600-0900 or 06:00-09:00 or 6:00-9:00, anywhere in line
   const m = line.match(/(\d{1,2}):?(\d{2})\s*[-–]\s*(\d{1,2}):?(\d{2})/);
   if(!m) return null;
   return {
@@ -2961,39 +2964,107 @@ function parseTimeRange(line) {
   };
 }
 
-function parseScheduleText(text) {
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  let currentDate = null;
-  const items = [];
-
-  for(const line of lines) {
-    // Try to extract date from header line
-    const dateCandidate = parseDateFromHeader(line);
-    if(dateCandidate && !parseTimeRange(line)) {
-      currentDate = dateCandidate;
-      continue;
+// Split pasted text into individual message blocks
+function splitIntoMessageBlocks(text) {
+  const BLOCK_STARTER = /^(\*.*\*|.*שינוי מועד|.*שינוי שעות|.*חוזר מנ)/;
+  const lines = text.split('\n');
+  const blocks = [];
+  let current = [];
+  for(const rawLine of lines) {
+    const line = rawLine.trim();
+    if(!line) {
+      if(current.length > 0) { blocks.push(current.join('\n')); current = []; }
+    } else if(BLOCK_STARTER.test(line) && current.length > 0) {
+      blocks.push(current.join('\n')); current = [line];
+    } else {
+      current.push(line);
     }
+  }
+  if(current.length > 0) blocks.push(current.join('\n'));
+  return blocks.filter(b => b.trim());
+}
 
-    // Try to parse as schedule line
+// Extract meeting title from block lines
+function extractMeetingTitle(lines) {
+  for(const line of lines) {
+    if(TITLE_SKIP.some(p => p.test(line))) continue;
+    if(parseDateFromHeader(line) && !parseTimeRange(line)) continue;
+    if(parseTimeRange(line)) continue;
+    const clean = line.replace(/\*/g, '').trim();
+    if(clean.length < 4) continue;
+    return clean;
+  }
+  return lines[0].replace(/\*/g, '').trim();
+}
+
+// Parse a personal-invite block (date & time on separate lines, names in a list)
+function parsePersonalMessage(lines) {
+  let blockDate = null;
+  for(const line of lines) {
+    const d = parseDateFromHeader(line);
+    if(d && !parseTimeRange(line)) { blockDate = d; break; }
+  }
+  if(!blockDate) return null;
+
+  let blockTime = null;
+  for(const line of lines) {
+    const t = parseTimeRange(line);
+    if(t) { blockTime = t; break; }
+  }
+  if(!blockTime) return null;
+
+  if(!lines.some(isScheduleRelevant)) return null;
+
+  return {
+    id: uuid(),
+    date: blockDate,
+    startTime: blockTime.start,
+    endTime: blockTime.end,
+    title: extractMeetingTitle(lines),
+    done: false,
+    uid: state.currentUser?.uid || 'local',
+    createdAt: new Date().toISOString()
+  };
+}
+
+// Parse WhatsApp schedule format (date header, then time+name on same line)
+function parseScheduleList(lines) {
+  const items = [];
+  let currentDate = null;
+  for(const line of lines) {
+    const dateCandidate = parseDateFromHeader(line);
+    if(dateCandidate && !parseTimeRange(line)) { currentDate = dateCandidate; continue; }
     const timeRange = parseTimeRange(line);
     if(!timeRange || !currentDate) continue;
-
-    // Check relevance
     if(!isScheduleRelevant(line)) continue;
-
-    // Extract title (remove time range from start)
-    const title = line.replace(/^\d{2}:?\d{2}\s*[-–]\s*\d{2}:?\d{2}\s*/, '').trim();
-
+    const title = line.replace(/\d{1,2}:?\d{2}\s*[-–]\s*\d{1,2}:?\d{2}\s*/, '').trim();
     items.push({
-      id: uuid(),
-      date: currentDate,
-      startTime: timeRange.start,
-      endTime: timeRange.end,
-      title,
-      done: false,
+      id: uuid(), date: currentDate,
+      startTime: timeRange.start, endTime: timeRange.end,
+      title, done: false,
       uid: state.currentUser?.uid || 'local',
       createdAt: new Date().toISOString()
     });
+  }
+  return items;
+}
+
+function parseScheduleText(text) {
+  const items = [];
+  const blocks = splitIntoMessageBlocks(text);
+
+  for(const block of blocks) {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const timeCount = lines.filter(l => parseTimeRange(l)).length;
+
+    if(timeCount === 1) {
+      // Personal message format — one event per block
+      const item = parsePersonalMessage(lines);
+      if(item) items.push(item);
+    } else {
+      // WhatsApp schedule format — multiple events per date
+      items.push(...parseScheduleList(lines));
+    }
   }
   return items;
 }
