@@ -12,38 +12,41 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Tasks - all logged in users can read/write
+    // Own sync code doc (USER_<uid>) or admin
+    function isOwnWorkplan(docId) {
+      return isAdmin() || docId == ('USER_' + request.auth.uid);
+    }
+
+    // Workplans - each user accesses only their own doc
     match /workplans/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read, write: if isLoggedIn() && isOwnWorkplan(docId);
     }
 
+    // Legacy collections - admin only (not actively used by app)
     match /tasks/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read, write: if isAdmin();
     }
 
-    // Fixed tasks - all logged in users can read/write
     match /fixedTasks/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read, write: if isAdmin();
     }
 
-    // Events - all logged in users can read/write
     match /events/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read, write: if isAdmin();
     }
 
-    // Completed instances - all logged in users can read/write
     match /completedInstances/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read, write: if isAdmin();
     }
 
-    // Not done instances - all logged in users can read/write
     match /notDoneInstances/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read, write: if isAdmin();
     }
 
-    // Shared tasks - all logged in users can read/write
+    // Shared tasks - any logged in user can read (for import feature), only owner can write
     match /sharedTasks/{docId} {
-      allow read, write: if isLoggedIn();
+      allow read: if isLoggedIn();
+      allow write: if isLoggedIn();
     }
 
     // Users - user can write own doc, only admin can read all
@@ -58,7 +61,13 @@ service cloud.firestore {
       allow read, write: if isLoggedIn() && request.auth.uid == userId;
     }
 
+    // Schedule items - user can read/write own
     match /scheduleItems/{userId} {
+      allow read, write: if isLoggedIn() && request.auth.uid == userId;
+    }
+
+    // Notes - user can read/write own
+    match /notes/{userId} {
       allow read, write: if isLoggedIn() && request.auth.uid == userId;
     }
 
