@@ -12,14 +12,26 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Own sync code doc (USER_<uid>) or admin
+    // Authorized user — admin OR email exists in allowedUsers list
+    function isAllowed() {
+      return isAdmin() || (request.auth != null &&
+        exists(/databases/$(database)/documents/allowedUsers/$(request.auth.token.email)));
+    }
+
+    // Own sync code doc (USER_<uid>) or admin — AND must be authorized
     function isOwnWorkplan(docId) {
-      return isAdmin() || docId == ('USER_' + request.auth.uid);
+      return isAllowed() && (isAdmin() || docId == ('USER_' + request.auth.uid));
     }
 
     // Workplans - each user accesses only their own doc
     match /workplans/{docId} {
       allow read, write: if isLoggedIn() && isOwnWorkplan(docId);
+    }
+
+    // Allowed users list - only admin manages it; a user may check their own entry
+    match /allowedUsers/{email} {
+      allow read: if isAdmin() || (isLoggedIn() && request.auth.token.email == email);
+      allow write: if isAdmin();
     }
 
     // Legacy collections - admin only (not actively used by app)
@@ -43,10 +55,10 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // Shared tasks - any logged in user can read (for import feature), only owner can write
+    // Shared tasks - any authorized user can read (for import feature) and write
     match /sharedTasks/{docId} {
-      allow read: if isLoggedIn();
-      allow write: if isLoggedIn();
+      allow read: if isAllowed();
+      allow write: if isAllowed();
     }
 
     // Users - user can write own doc, only admin can read all
@@ -56,19 +68,19 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Unit settings - user can read/write own
+    // Unit settings - user can read/write own (must be authorized)
     match /userSettings/{userId} {
-      allow read, write: if isLoggedIn() && request.auth.uid == userId;
+      allow read, write: if isAllowed() && request.auth.uid == userId;
     }
 
-    // Schedule items - user can read/write own
+    // Schedule items - user can read/write own (must be authorized)
     match /scheduleItems/{userId} {
-      allow read, write: if isLoggedIn() && request.auth.uid == userId;
+      allow read, write: if isAllowed() && request.auth.uid == userId;
     }
 
-    // Notes - user can read/write own
+    // Notes - user can read/write own (must be authorized)
     match /notes/{userId} {
-      allow read, write: if isLoggedIn() && request.auth.uid == userId;
+      allow read, write: if isAllowed() && request.auth.uid == userId;
     }
 
     // Deny everything else

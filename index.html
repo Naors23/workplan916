@@ -1676,6 +1676,28 @@
   <p style="color:#475569;font-size:0.7rem;">© כל הזכויות שמורות נאור סעדי</p>
 </div>
 
+<!-- ======================== ACCESS DENIED SCREEN ======================== -->
+<div id="access-denied-screen" style="
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#0A2647 0%,#144272 100%);
+  flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;
+">
+  <div style="font-size:3rem;">🔒</div>
+  <div style="text-align:center;max-width:340px;">
+    <h1 style="color:#C9A84C;font-size:1.4rem;font-weight:800;margin-bottom:10px;">אין לך הרשאה</h1>
+    <p style="color:#CBD5E1;font-size:0.9rem;line-height:1.6;">
+      החשבון <span id="denied-email" style="color:#fff;font-weight:700;"></span> אינו מורשה לאפליקציה.<br>
+      פנה למנהל המערכת כדי לקבל גישה.
+    </p>
+  </div>
+  <button onclick="signOutUser()" style="
+    padding:12px 28px;background:rgba(255,255,255,0.1);color:#fff;
+    border:1.5px solid #C9A84C;border-radius:10px;cursor:pointer;
+    font-weight:700;font-size:0.9rem;">
+    התנתק ונסה חשבון אחר
+  </button>
+</div>
+
 <!-- ======================== EVENT MODAL ======================== -->
 <div class="modal-overlay" id="event-modal-overlay">
   <div class="modal" style="max-width:420px;">
@@ -1722,7 +1744,21 @@
       <button onclick="document.getElementById('admin-modal-overlay').style.display='none'" style="background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;">✕</button>
     </div>
     <div style="padding:20px;overflow-y:auto;flex:1;">
-      <p style="color:#475569;font-size:0.85rem;margin-bottom:16px;">משתמשים רשומים באפליקציה:</p>
+
+      <!-- ====== ניהול הרשאות ====== -->
+      <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;margin-bottom:20px;">
+        <p style="color:#0A2647;font-size:0.92rem;font-weight:800;margin-bottom:4px;">🔑 ניהול הרשאות</p>
+        <p style="color:#94A3B8;font-size:0.78rem;margin-bottom:12px;">רק מיילים ברשימה הזו יכולים להיכנס לאפליקציה</p>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <input id="allowed-email-input" type="email" placeholder="email@example.com" dir="ltr"
+            style="flex:1;padding:10px 12px;border:1px solid #CBD5E1;border-radius:8px;font-size:0.85rem;text-align:left;"
+            onkeydown="if(event.key==='Enter')addAllowedUser()">
+          <button onclick="addAllowedUser()" style="background:#C9A84C;color:#0A2647;border:none;border-radius:8px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:0.85rem;white-space:nowrap;">+ הוסף</button>
+        </div>
+        <div id="allowed-users-list" style="display:flex;flex-direction:column;gap:6px;">טוען...</div>
+      </div>
+
+      <p style="color:#475569;font-size:0.85rem;margin-bottom:16px;">משתמשים שנכנסו לאפליקציה:</p>
       <div id="admin-users-list">טוען...</div>
     </div>
   </div>
@@ -2719,14 +2755,58 @@ function signOutUser() {
   firebase.auth().signOut();
 }
 
+// Check whether a signed-in user is authorized (admin or in allowedUsers list)
+function checkUserAllowed(user) {
+  if(!user || !user.email) return Promise.resolve(false);
+  if(user.email === ADMIN_EMAIL) return Promise.resolve(true);
+  if(!state.firebase) return Promise.resolve(false);
+  const email = user.email.toLowerCase();
+  return state.firebase.collection('allowedUsers').doc(email).get()
+    .then(doc => doc.exists)
+    .catch(() => false);
+}
+
+// Show the "no permission" screen for a user not in the list
+function showAccessDenied(user) {
+  state.currentUser = null;
+  state.syncCode = null;
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('user-info').style.display = 'none';
+  document.getElementById('btn-admin').style.display = 'none';
+  const emailEl = document.getElementById('denied-email');
+  if(emailEl) emailEl.textContent = user && user.email ? user.email : '';
+  const scr = document.getElementById('access-denied-screen');
+  if(scr) scr.style.display = 'flex';
+}
+
 function handleAuthStateChange(user) {
   if(user) {
+    // ===== Permission gate: admin OR email in allowedUsers =====
+    checkUserAllowed(user).then(allowed => {
+      if(allowed) proceedWithLogin(user);
+      else showAccessDenied(user);
+    }).catch(() => showAccessDenied(user));
+    return;
+  }
+  // Logged out
+  state.currentUser = null;
+  state.syncCode = null;
+  document.getElementById('lock-screen').style.display = 'flex';
+  document.getElementById('user-info').style.display = 'none';
+  document.getElementById('btn-admin').style.display = 'none';
+  const adScr = document.getElementById('access-denied-screen');
+  if(adScr) adScr.style.display = 'none';
+}
+
+function proceedWithLogin(user) {
     state.currentUser = user;
     // Admin uses original doc to keep existing data; others get their own doc
     state.syncCode = user.email === ADMIN_EMAIL ? 'WORKPLAN-916-NAOR' : 'USER_' + user.uid;
 
-    // Hide lock screen
+    // Hide lock / denied screens
     document.getElementById('lock-screen').style.display = 'none';
+    const adScr2 = document.getElementById('access-denied-screen');
+    if(adScr2) adScr2.style.display = 'none';
 
     // Show user info in header
     const userInfo = document.getElementById('user-info');
@@ -2776,14 +2856,6 @@ function handleAuthStateChange(user) {
     const params = new URLSearchParams(window.location.search);
     const importId = params.get('import');
     if(importId) importSharedTask(importId);
-
-  } else {
-    state.currentUser = null;
-    state.syncCode = null;
-    document.getElementById('lock-screen').style.display = 'flex';
-    document.getElementById('user-info').style.display = 'none';
-    document.getElementById('btn-admin').style.display = 'none';
-  }
 }
 
 function saveUserProfile(user) {
@@ -2944,7 +3016,76 @@ function syncToFirebase() {
 function openAdminPanel() {
   if(state.currentUser?.email !== ADMIN_EMAIL) return;
   document.getElementById('admin-modal-overlay').style.display = 'flex';
+  loadAllowedUsers();
   loadAllUsers();
+}
+
+// ===== Allowed users management =====
+function loadAllowedUsers() {
+  if(!state.firebase) return;
+  if(state.currentUser?.email !== ADMIN_EMAIL) return;
+  const list = document.getElementById('allowed-users-list');
+  list.textContent = 'טוען...';
+  state.firebase.collection('allowedUsers').get().then(snapshot => {
+    list.textContent = '';
+    if(snapshot.empty) {
+      const p = document.createElement('p');
+      p.style.cssText = 'color:#94A3B8;font-size:0.8rem;';
+      p.textContent = 'אין מורשים עדיין — הוסף מייל למעלה';
+      list.appendChild(p);
+      return;
+    }
+    snapshot.forEach(doc => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;background:white;border:1px solid #E2E8F0;border-radius:8px;padding:8px 12px;';
+      const em = document.createElement('span');
+      em.style.cssText = 'font-size:0.83rem;color:#1E293B;direction:ltr;text-align:left;word-break:break-all;';
+      em.textContent = doc.id;
+      row.appendChild(em);
+      const rm = document.createElement('button');
+      rm.style.cssText = 'background:#FEE2E2;color:#DC2626;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:0.75rem;font-weight:700;white-space:nowrap;';
+      rm.textContent = '🗑️ הסר';
+      rm.dataset.email = doc.id;
+      rm.addEventListener('click', () => removeAllowedUser(rm.dataset.email));
+      row.appendChild(rm);
+      list.appendChild(row);
+    });
+  }).catch(() => {
+    list.textContent = '';
+    const p = document.createElement('p');
+    p.style.cssText = 'color:#EF4444;font-size:0.8rem;';
+    p.textContent = 'שגיאה בטעינת ההרשאות';
+    list.appendChild(p);
+  });
+}
+
+function addAllowedUser() {
+  if(state.currentUser?.email !== ADMIN_EMAIL) return;
+  const input = document.getElementById('allowed-email-input');
+  const email = (input.value || '').trim().toLowerCase();
+  if(!email) return;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showToast('כתובת מייל לא תקינה', 'error');
+    return;
+  }
+  state.firebase.collection('allowedUsers').doc(email).set({
+    email: email,
+    addedBy: state.currentUser.email,
+    addedAt: new Date().toISOString()
+  }).then(() => {
+    input.value = '';
+    showToast('ההרשאה נוספה', 'success');
+    loadAllowedUsers();
+  }).catch(() => showToast('שגיאה בהוספה', 'error'));
+}
+
+function removeAllowedUser(email) {
+  if(state.currentUser?.email !== ADMIN_EMAIL) return;
+  if(!confirm(`להסיר את ההרשאה של ${email}? הוא ייחסם בכניסה הבאה.`)) return;
+  state.firebase.collection('allowedUsers').doc(email).delete().then(() => {
+    showToast('ההרשאה הוסרה', 'success');
+    loadAllowedUsers();
+  }).catch(() => showToast('שגיאה בהסרה', 'error'));
 }
 
 function loadAllUsers() {
@@ -4501,7 +4642,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260610-1';
+const CURRENT_VERSION = '20260611-1';
 
 function checkForUpdate() {
   fetch('/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
