@@ -4667,16 +4667,20 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-1';
+const CURRENT_VERSION = '20260611-2';
 
 function checkForUpdate() {
-  fetch('/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
+  fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
     .then(r => r.json())
     .then(data => {
+      const banner = document.getElementById('update-banner');
       if (data.version !== CURRENT_VERSION) {
         localStorage.setItem('wp_update_pending', '1');
-        const banner = document.getElementById('update-banner');
         if (banner) banner.style.display = 'flex';
+      } else {
+        // already up to date — clear stale pending flag and hide banner
+        localStorage.removeItem('wp_update_pending');
+        if (banner) banner.style.display = 'none';
       }
     }).catch(() => {});
 }
