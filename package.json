@@ -1,0 +1,27 @@
+{
+  "name": "work-plan",
+  "version": "1.0.0",
+  "description": "מערכת ניהול משימות חכמה לפלגת לוגיסטיקה 916, בסיס אשדוד — בנויה כ-PWA (Progressive Web App) עם סנכרון ענן בזמן אמת.",
+  "main": "create_pptx.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naors23/workplan916.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Naors23/workplan916/issues"
+  },
+  "homepage": "https://github.com/Naors23/workplan916#readme",
+  "dependencies": {
+    "@capacitor-firebase/authentication": "^8.3.0",
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^7.6.6",
+    "@capacitor/core": "^8.4.0"
+  }
+}
