@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="carbon" cx="0.5" cy="0.45" r="0.75">
+      <stop offset="0" stop-color="#20242A"/>
+      <stop offset="1" stop-color="#0A0C0F"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#carbon)"/>
+  <g transform="translate(512,512) scale(0.93) translate(-512,-512)">
+  <defs>
+    <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#F6F8F9"/>
+      <stop offset="0.18" stop-color="#CBD2D7"/>
+      <stop offset="0.46" stop-color="#828A91"/>
+      <stop offset="0.54" stop-color="#666E76"/>
+      <stop offset="0.82" stop-color="#AEB6BD"/>
+      <stop offset="1"    stop-color="#E3E8EB"/>
+    </linearGradient>
+    <radialGradient id="face" cx="0.5" cy="0.42" r="0.65">
+      <stop offset="0"   stop-color="#333A42"/>
+      <stop offset="0.6" stop-color="#1E242B"/>
+      <stop offset="1"   stop-color="#0C1014"/>
+    </radialGradient>
+    <linearGradient id="calBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4A555F"/>
+      <stop offset="1" stop-color="#28303A"/>
+    </linearGradient>
+    <linearGradient id="check" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8FC0F2"/>
+      <stop offset="1" stop-color="#2D7FF9"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EDEFF1"/>
+      <stop offset="1" stop-color="#9AA2A9"/>
+    </linearGradient>
+    <clipPath id="faceClip"><circle cx="512" cy="512" r="406"/></clipPath>
+  </defs>
+
+  <!-- chrome ring (thick, beveled) -->
+  <circle cx="512" cy="512" r="500" fill="#23272C"/>
+  <circle cx="512" cy="512" r="492" fill="url(#chrome)"/>
+  <circle cx="512" cy="512" r="416" fill="#1B1F24"/>
+  <!-- dark face -->
+  <circle cx="512" cy="512" r="406" fill="url(#face)"/>
+
+  <!-- blueprint grid clipped to face -->
+  <g clip-path="url(#faceClip)" stroke="#5C86B0" stroke-width="3" opacity="0.22">
+    <line x1="200" y1="0" x2="200" y2="1024"/>
+    <line x1="306" y1="0" x2="306" y2="1024"/>
+    <line x1="412" y1="0" x2="412" y2="1024"/>
+    <line x1="518" y1="0" x2="518" y2="1024"/>
+    <line x1="624" y1="0" x2="624" y2="1024"/>
+    <line x1="730" y1="0" x2="730" y2="1024"/>
+    <line x1="836" y1="0" x2="836" y2="1024"/>
+    <line x1="0" y1="200" x2="1024" y2="200"/>
+    <line x1="0" y1="306" x2="1024" y2="306"/>
+    <line x1="0" y1="412" x2="1024" y2="412"/>
+    <line x1="0" y1="518" x2="1024" y2="518"/>
+    <line x1="0" y1="624" x2="1024" y2="624"/>
+    <line x1="0" y1="730" x2="1024" y2="730"/>
+    <line x1="0" y1="836" x2="1024" y2="836"/>
+  </g>
+  <!-- subtle inner top highlight on the glass face -->
+  <ellipse cx="512" cy="380" rx="260" ry="120" fill="#FFFFFF" opacity="0.05" clip-path="url(#faceClip)"/>
+
+  <!-- calendar tabs -->
+  <rect x="430" y="384" width="28" height="48" rx="14" fill="url(#silver)"/>
+  <rect x="566" y="384" width="28" height="48" rx="14" fill="url(#silver)"/>
+  <!-- calendar body -->
+  <rect x="368" y="406" width="288" height="248" rx="30" fill="url(#calBody)"
+        stroke="#C3CBD1" stroke-width="7"/>
+  <!-- header divider -->
+  <line x1="375" y1="470" x2="649" y2="470" stroke="#C3CBD1" stroke-width="5" opacity="0.85"/>
+  <!-- bold blue check (glass) -->
+  <path d="M424 548 L486 612 L612 460" fill="none" stroke="url(#check)"
+        stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M424 548 L486 612 L612 460" fill="none" stroke="#FFFFFF"
+        stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"
+        transform="translate(0,-12)"/>
+</g>
+</svg>
