@@ -636,8 +636,9 @@
     }
     .task-actions {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 4px;
+      align-items: flex-start;
       opacity: 0;
       transition: var(--transition);
     }
@@ -650,13 +651,13 @@
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1rem;
-      min-width: 34px;
-      min-height: 34px;
+      font-size: 0.95rem;
+      min-width: 30px;
+      min-height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px;
+      padding: 3px;
       border-radius: 8px;
       transition: var(--transition);
     }
@@ -4679,7 +4680,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-6';
+const CURRENT_VERSION = '20260611-7';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
