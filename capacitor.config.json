@@ -1,6 +1,6 @@
 {
   "appId": "il.idf.workplan916",
-  "appName": "תוכנית עבודה 916",
+  "appName": "Plan Master",
   "webDir": "www",
   "server": {
     "url": "https://naors23.github.io/workplan916/",
