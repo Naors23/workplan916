@@ -34,7 +34,7 @@
       --shadow-md:   0 4px 12px rgba(0,0,0,0.15);
       --shadow-lg:   0 8px 24px rgba(0,0,0,0.2);
       --radius-sm:   6px;
-      --radius-md:   10px;
+      --radius-md:   12px;
       --radius-lg:   16px;
       --transition:  all 0.2s ease;
     }
@@ -630,7 +630,7 @@
       background: var(--gray-100);
       color: var(--gray-600);
       padding: 1px 5px;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       margin-top: 4px;
       display: inline-block;
     }
@@ -658,7 +658,7 @@
       align-items: center;
       justify-content: center;
       padding: 3px;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       transition: var(--transition);
     }
     .task-action-btn:hover { background: var(--gray-100); }
@@ -1584,7 +1584,7 @@
       position: absolute;
       top: 3px;
       left: 3px;
-      background: #EF4444;
+      background: var(--navy-light);
       color: white;
       font-size: 0.58rem;
       font-weight: 800;
@@ -4680,7 +4680,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-7';
+const CURRENT_VERSION = '20260611-8';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
