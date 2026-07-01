@@ -1327,46 +1327,34 @@
         background: #0A2647 !important;
       }
       body.print-monthly .month-cell {
-        min-height: 80px !important;
-        padding: 4px 6px !important;
+        min-height: 100px !important;
+        padding: 5px 6px !important;
         cursor: default !important;
         break-inside: avoid;
       }
-      /* Next-month days: keep fully legible in B&W (no faded opacity) */
-      body.print-monthly .month-cell.other-month { opacity: 1 !important; background: #ffffff !important; }
-      body.print-monthly .month-cell.other-month .cell-day-num { color: #94A3B8 !important; }
+      body.print-monthly .month-cell.other-month { opacity: 0.3; }
       body.print-monthly .month-cell.today {
-        background: #ffffff !important;
+        background: rgba(10,38,71,0.08) !important;
         outline: 2px solid #0A2647 !important;
-        outline-offset: -2px;
       }
       body.print-monthly .month-cell.weekend-cell {
-        background: #F8FAFC !important;
+        background: #FFF5F5 !important;
       }
       body.print-monthly .cell-day-num { font-size: 0.9rem !important; font-weight: 700 !important; margin-bottom: 3px !important; }
       body.print-monthly .cell-task-chip {
         font-size: 0.7rem !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
         padding: 2px 5px !important;
         margin-bottom: 2px !important;
         display: block !important;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        background: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #94a3b8 !important;
-        border-right: 4px solid #334155 !important;
-        border-radius: 3px !important;
       }
       body.print-monthly .cell-holiday,
       body.print-monthly .cell-event {
         font-size: 0.65rem !important;
         padding: 1px 4px !important;
-        background: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #94a3b8 !important;
-        border-radius: 3px !important;
       }
       body.print-monthly .cell-more { font-size: 0.68rem !important; color: #64748B; }
       body.print-monthly .cell-add-btn { display: none !important; }
@@ -4754,7 +4742,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-13';
+const CURRENT_VERSION = '20260611-14';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
