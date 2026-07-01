@@ -1863,8 +1863,11 @@
 <!-- ======================== SUBTITLE EDIT MODAL ======================== -->
 <div id="subtitle-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:3000;align-items:center;justify-content:center;padding:16px;">
   <div style="background:white;border-radius:16px;padding:24px;max-width:360px;width:100%;direction:rtl;">
-    <h3 style="margin:0 0 14px;color:#0A2647;font-size:1rem;">ערוך כיתוב כותרת</h3>
+    <h3 style="margin:0 0 14px;color:#0A2647;font-size:1rem;">עריכת כיתובים</h3>
+    <label style="display:block;font-size:0.8rem;color:#64748B;margin-bottom:5px;">כיתוב כותרת</label>
     <input id="subtitle-input" type="text" placeholder="לדוגמה: מחלקת לוגיסטיקה" style="width:100%;padding:10px 12px;border:1.5px solid #CBD5E1;border-radius:10px;font-size:0.95rem;direction:rtl;box-sizing:border-box;font-family:inherit;">
+    <label style="display:block;font-size:0.8rem;color:#64748B;margin:14px 0 5px;">כיתוב תחתית להדפסה</label>
+    <input id="footer-input" type="text" placeholder="לדוגמה: מוקד לוגיסטיקה אטלי" style="width:100%;padding:10px 12px;border:1.5px solid #CBD5E1;border-radius:10px;font-size:0.95rem;direction:rtl;box-sizing:border-box;font-family:inherit;">
     <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end;">
       <button onclick="cancelEditSubtitle()" style="padding:8px 18px;border-radius:10px;border:1.5px solid #CBD5E1;background:white;cursor:pointer;font-size:0.88rem;">ביטול</button>
       <button onclick="saveSubtitle()" style="padding:8px 18px;border-radius:10px;border:none;background:#0A2647;color:white;cursor:pointer;font-size:0.88rem;font-weight:700;">שמור</button>
@@ -2749,6 +2752,7 @@ function printWeekly() {
   document.getElementById('print-title-label').textContent = 'תוכנית עבודה שבועית';
   document.getElementById('print-period-label').textContent = periodStr;
   document.getElementById('print-date-label').textContent = `הופק: ${formatDate(new Date())}`;
+  setPrintFooter();
   document.body.classList.remove('print-monthly');
   setTimeout(() => window.print(), 200);
 }
@@ -2760,6 +2764,7 @@ function printMonthly() {
   document.getElementById('print-title-label').textContent = 'תוכנית עבודה חודשית';
   document.getElementById('print-period-label').textContent = monthName;
   document.getElementById('print-date-label').textContent = `הופק: ${formatDate(new Date())}`;
+  setPrintFooter();
   document.body.classList.add('print-monthly');
   setTimeout(() => { window.print(); document.body.classList.remove('print-monthly'); }, 200);
 }
@@ -2904,9 +2909,11 @@ function proceedWithLogin(user) {
       // טען מ-localStorage מיד (ללא המתנה)
       const cachedUnit = localStorage.getItem('userUnit');
       const cachedSubtitle = localStorage.getItem('userCustomSubtitle');
+      const cachedFooter = localStorage.getItem('userFooterText');
       if(cachedUnit && UNITS[cachedUnit]) {
         applyUnit(cachedUnit, cachedSubtitle || 'פלגת 916');
       }
+      applyFooter(cachedFooter != null ? cachedFooter : getDefaultFooter());
 
       // אז סנכרן מ-Firestore
       state.firebase.collection('users').doc(user.uid).get().then(doc => {
@@ -2917,6 +2924,10 @@ function proceedWithLogin(user) {
           applyUnit(data.unit, data.customSubtitle || 'פלגת 916');
         } else if(!cachedUnit) {
           showUnitSelector();
+        }
+        if(data.footerText != null) {
+          localStorage.setItem('userFooterText', data.footerText);
+          applyFooter(data.footerText);
         }
       }).catch(() => { if(!cachedUnit) { applyUnit('אשדוד', 'פלגת 916'); showUnitSelector(); } });
     }
@@ -3010,10 +3021,27 @@ function applyUnit(unitKey, customText) {
   state.currentUnit = unitKey;
 }
 
+// Per-user print footer text (admin defaults to the original line)
+function getDefaultFooter() {
+  return state.currentUser?.email === ADMIN_EMAIL ? 'מוקד לוגיסטיקה 916 בסיס אשדוד' : '';
+}
+function applyFooter(text) {
+  state.footerText = (text != null) ? text : getDefaultFooter();
+  setPrintFooter();
+}
+function setPrintFooter() {
+  const el = document.getElementById('print-footer');
+  if(!el) return;
+  const mid = (state.footerText || '').trim();
+  el.innerHTML = 'הופק מתוכנית עבודה דיגיטלית' + (mid ? ' | ' + escHtml(mid) : '') + ' &nbsp;|&nbsp; © כל הזכויות שמורות נאור סעדי';
+}
+
 // Subtitle edit (only the custom part — e.g. "פלגת 916")
 function startEditSubtitle() {
   const current = document.getElementById('subtitle-custom')?.textContent || '';
   document.getElementById('subtitle-input').value = current.trim();
+  const fin = document.getElementById('footer-input');
+  if(fin) fin.value = state.footerText || '';
   document.getElementById('subtitle-modal').style.display = 'flex';
   setTimeout(() => document.getElementById('subtitle-input').focus(), 100);
 }
@@ -3024,16 +3052,20 @@ function cancelEditSubtitle() {
 
 function saveSubtitle() {
   const val = document.getElementById('subtitle-input').value.trim();
-  if(!val) return;
-  document.getElementById('subtitle-custom').textContent = val;
-  document.getElementById('subtitle-modal').style.display = 'none';
-  localStorage.setItem('userCustomSubtitle', val);
-  if(state.firebase && state.currentUser) {
-    state.firebase.collection('users').doc(state.currentUser.uid).set({
-      customSubtitle: val
-    }, { merge: true }).catch(()=>{});
+  const footerVal = (document.getElementById('footer-input')?.value || '').trim();
+  if(val) {
+    document.getElementById('subtitle-custom').textContent = val;
+    localStorage.setItem('userCustomSubtitle', val);
   }
-  showToast('כיתוב עודכן', 'success');
+  applyFooter(footerVal);
+  localStorage.setItem('userFooterText', footerVal);
+  document.getElementById('subtitle-modal').style.display = 'none';
+  if(state.firebase && state.currentUser) {
+    const payload = { footerText: footerVal };
+    if(val) payload.customSubtitle = val;
+    state.firebase.collection('users').doc(state.currentUser.uid).set(payload, { merge: true }).catch(()=>{});
+  }
+  showToast('הכיתובים עודכנו', 'success');
 }
 
 function setupFirebaseListener() {
@@ -4722,7 +4754,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-12';
+const CURRENT_VERSION = '20260611-13';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
