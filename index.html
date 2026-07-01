@@ -1303,22 +1303,8 @@
         font-weight: 800; color: #991b1b;
       }
 
-      /* Schedule (לו"ז) items — compact + full-width titles + B&W friendly */
-      .schedule-dot, .schedule-delete { display: none !important; }
-      .schedule-section-label { font-size: 0.72rem !important; margin: 2px 0 3px !important; }
-      .schedule-item {
-        background: #ffffff !important;
-        border: 1px solid #94a3b8 !important;
-        border-right: 3px solid #334155 !important;
-        border-radius: 4px !important;
-        padding: 3px 6px !important;
-        margin-bottom: 3px !important;
-        gap: 5px !important;
-      }
-      .schedule-time { font-size: 0.68rem !important; color: #0f172a !important; font-weight: 800 !important; }
-      .schedule-title { font-size: 0.7rem !important; color: #0f172a !important; line-height: 1.2 !important; }
-      .schedule-item.done-sched { opacity: 1 !important; text-decoration: none !important; }
-      .schedule-item.done-sched .schedule-title { text-decoration: line-through !important; color: #475569 !important; }
+      /* Schedule (לו"ז) is screen-only — hidden from printouts */
+      .schedule-section-label, .schedule-item { display: none !important; }
 
       /* Event pills — hide edit/delete controls and make B&W friendly */
       .delete-event-btn { display: none !important; }
@@ -4736,7 +4722,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-11';
+const CURRENT_VERSION = '20260611-12';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
