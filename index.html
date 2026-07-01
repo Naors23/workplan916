@@ -1243,7 +1243,8 @@
       .week-view {
         display: grid !important;
         grid-template-columns: repeat(5, 1fr) !important;
-        gap: 8px;
+        align-items: start !important;
+        gap: 6px;
       }
       .day-column {
         min-height: auto;
@@ -1318,6 +1319,18 @@
       .schedule-title { font-size: 0.7rem !important; color: #0f172a !important; line-height: 1.2 !important; }
       .schedule-item.done-sched { opacity: 1 !important; text-decoration: none !important; }
       .schedule-item.done-sched .schedule-title { text-decoration: line-through !important; color: #475569 !important; }
+
+      /* Event pills — hide edit/delete controls and make B&W friendly */
+      .delete-event-btn { display: none !important; }
+      .event-pill {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #94a3b8 !important;
+        border-right: 3px solid #334155 !important;
+        border-radius: 4px !important;
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+      }
 
       /* ── Monthly print styles ── */
       body.print-monthly .month-view {
@@ -4723,7 +4736,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-10';
+const CURRENT_VERSION = '20260611-11';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
