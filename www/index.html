@@ -1226,14 +1226,14 @@
         display: flex !important;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 16px;
+        padding: 6px 14px;
         background: #0A2647 !important;
         color: white;
         border-radius: 8px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
       }
       .print-header-logos { display: flex; align-items: center; gap: 10px; }
-      .print-header-logos img { height: 48px; width: auto; }
+      .print-header-logos img { height: 38px; width: auto; }
       .print-header-title { text-align: center; flex: 1; }
       .print-header-title h2 { color: #C9A84C !important; font-size: 1.2rem; font-weight: 800; margin: 0; }
       .print-header-title p { color: #CBD5E1 !important; font-size: 0.82rem; margin: 3px 0 0; }
@@ -1301,6 +1301,23 @@
         content: "\2717 \05DC\05D0 \05D1\05D5\05E6\05E2  ";
         font-weight: 800; color: #991b1b;
       }
+
+      /* Schedule (לו"ז) items — compact + full-width titles + B&W friendly */
+      .schedule-dot, .schedule-delete { display: none !important; }
+      .schedule-section-label { font-size: 0.72rem !important; margin: 2px 0 3px !important; }
+      .schedule-item {
+        background: #ffffff !important;
+        border: 1px solid #94a3b8 !important;
+        border-right: 3px solid #334155 !important;
+        border-radius: 4px !important;
+        padding: 3px 6px !important;
+        margin-bottom: 3px !important;
+        gap: 5px !important;
+      }
+      .schedule-time { font-size: 0.68rem !important; color: #0f172a !important; font-weight: 800 !important; }
+      .schedule-title { font-size: 0.7rem !important; color: #0f172a !important; line-height: 1.2 !important; }
+      .schedule-item.done-sched { opacity: 1 !important; text-decoration: none !important; }
+      .schedule-item.done-sched .schedule-title { text-decoration: line-through !important; color: #475569 !important; }
 
       /* ── Monthly print styles ── */
       body.print-monthly .month-view {
@@ -4706,7 +4723,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-9';
+const CURRENT_VERSION = '20260611-10';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
