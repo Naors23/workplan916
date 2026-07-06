@@ -2322,12 +2322,14 @@ let state = {
 // STORAGE
 // ============================================================
 function saveLocal() {
-  localStorage.setItem('wp_tasks', JSON.stringify(state.tasks));
-  localStorage.setItem('wp_fixed', JSON.stringify(state.fixedTasks));
-  localStorage.setItem('wp_completed', JSON.stringify(state.completedInstances||[]));
-  localStorage.setItem('wp_notdone', JSON.stringify(state.notDoneInstances||[]));
-  localStorage.setItem('wp_events', JSON.stringify(state.events||[]));
-  localStorage.setItem('wp_sync_code', state.syncCode || '');
+  try {
+    localStorage.setItem('wp_tasks', JSON.stringify(state.tasks));
+    localStorage.setItem('wp_fixed', JSON.stringify(state.fixedTasks));
+    localStorage.setItem('wp_completed', JSON.stringify(state.completedInstances||[]));
+    localStorage.setItem('wp_notdone', JSON.stringify(state.notDoneInstances||[]));
+    localStorage.setItem('wp_events', JSON.stringify(state.events||[]));
+    localStorage.setItem('wp_sync_code', state.syncCode || '');
+  } catch(e) { console.warn('saveLocal failed:', e); }
 }
 
 function loadLocal() {
@@ -2341,6 +2343,9 @@ function loadLocal() {
   } catch(e) {
     state.tasks = [];
     state.fixedTasks = [];
+    state.completedInstances = [];
+    state.notDoneInstances = [];
+    state.events = [];
   }
 }
 
@@ -3933,16 +3938,16 @@ function renderMonthView() {
         : `<span>${c.day}</span>`;
 
       const holidayEls = holidays.slice(0,2).map(h =>
-        `<div class="cell-holiday">🕎 ${h}</div>`
+        `<div class="cell-holiday">🕎 ${escHtml(h)}</div>`
       ).join('');
 
       const dayEvents = (state.events||[]).filter(e => eventCoversDay(e, dk));
       const eventEls = dayEvents.slice(0,2).map(e =>
-        `<div class="cell-event" style="background:${e.color||'#3B82F6'}">🗓️ ${e.title}</div>`
+        `<div class="cell-event" style="background:${e.color||'#3B82F6'}">🗓️ ${escHtml(e.title)}</div>`
       ).join('');
 
       const taskEls = tasks.slice(0,3).map(t =>
-        `<div class="cell-task-chip" style="background:${t.color||DEFAULT_COLOR}" title="${t.title}">${t.title}</div>`
+        `<div class="cell-task-chip" style="background:${t.color||DEFAULT_COLOR}" title="${escHtml(t.title)}">${escHtml(t.title)}</div>`
       ).join('');
       const moreEl = tasks.length>3 ? `<div class="cell-more">+${tasks.length-3} עוד</div>` : '';
 
@@ -4012,7 +4017,7 @@ function renderDayColumn(day) {
   const dayName = HEB_DAYS_FULL[day.getDay()];
 
   const topItems = [
-    ...holidays.map(h => `<span class="holiday-pill">🕎 ${h}</span>`),
+    ...holidays.map(h => `<span class="holiday-pill">🕎 ${escHtml(h)}</span>`),
     ...dayEvents.map(e => {
       const isStart = isEventStart(e, dk);
       const hasRange = (e.endDate && e.endDate !== e.startDate) || (e.repeatYearly && e.endDate && e.endDate.slice(5) !== (e.startDate||e.date).slice(5));
@@ -4742,7 +4747,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-14';
+const CURRENT_VERSION = '20260611-15';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
