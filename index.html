@@ -2428,7 +2428,7 @@ function getChristianHolidays(year) {
 async function fetchMuslimHolidays(year) {
   const cacheKey = `holidays_muslim_${year}`;
   const cached = localStorage.getItem(cacheKey);
-  if(cached) return JSON.parse(cached);
+  if(cached) { try { return JSON.parse(cached); } catch(e) {} }
   try {
     const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/IL`);
     const data = await res.json();
@@ -2451,7 +2451,7 @@ async function fetchMuslimHolidays(year) {
 async function fetchHolidays(year) {
   const cacheKey = `holidays_he_${year}`;
   const cached = localStorage.getItem(cacheKey);
-  if(cached) { state.holidays = JSON.parse(cached); return; }
+  if(cached) { try { state.holidays = JSON.parse(cached); return; } catch(e) {} }
   showLoading(true);
   try {
     const url = `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=${year}&month=x&ss=on&mf=on&c=off&geo=geoname&geonameid=293397&M=on&s=on&lg=he`;
@@ -4442,9 +4442,11 @@ function exportJSON() {
   const data = { tasks: state.tasks, fixedTasks: state.fixedTasks, exportedAt: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(blob);
+  a.href = url;
   a.download = `workplan_${formatDate(new Date())}.json`;
   a.click();
+  URL.revokeObjectURL(url);
   showToast('הקובץ יוצא', 'success');
 }
 
@@ -4546,7 +4548,7 @@ async function ensureHolidays() {
     if(!localStorage.getItem(cacheKey)) await fetchHolidays(y);
     else {
       const cached = localStorage.getItem(cacheKey);
-      if(cached) Object.assign(state.holidays, JSON.parse(cached));
+      if(cached) { try { Object.assign(state.holidays, JSON.parse(cached)); } catch(e) {} }
     }
   }
   render();
@@ -4747,7 +4749,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-15';
+const CURRENT_VERSION = '20260611-16';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
