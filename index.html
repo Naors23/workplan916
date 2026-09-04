@@ -1206,171 +1206,6 @@
 
     @page { size: A4 landscape; margin: 0.7cm; }
 
-    @media print {
-
-      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-      #app-header, #toast-container, .modal-overlay, #update-banner { display: none !important; }
-      body { background: white !important; font-family: 'Arial Hebrew', Arial, sans-serif; font-size: 13px; }
-      #main-content { padding: 0; }
-
-      /* Default (weekly): hide month/year */
-      .month-view, .year-view { display: none !important; }
-      /* Monthly mode: hide week, show month */
-      body.print-monthly .week-view,
-      body.print-monthly .mobile-week-view { display: none !important; }
-      body.print-monthly .month-view { display: block !important; }
-
-      /* Print header */
-      #print-header {
-        display: flex !important;
-        align-items: center;
-        justify-content: space-between;
-        padding: 6px 14px;
-        background: #0A2647 !important;
-        color: white;
-        border-radius: 8px;
-        margin-bottom: 8px;
-      }
-      .print-header-logos { display: flex; align-items: center; gap: 10px; }
-      .print-header-logos img { height: 38px; width: auto; }
-      .print-header-title { text-align: center; flex: 1; }
-      .print-header-title h2 { color: #C9A84C !important; font-size: 1.2rem; font-weight: 800; margin: 0; }
-      .print-header-title p { color: #CBD5E1 !important; font-size: 0.82rem; margin: 3px 0 0; }
-      .print-header-date { display: none !important; }
-
-      /* Week grid */
-      .week-view {
-        display: grid !important;
-        grid-template-columns: repeat(5, 1fr) !important;
-        align-items: start !important;
-        gap: 6px;
-      }
-      .day-column {
-        min-height: auto;
-        border: 2px solid #0A2647 !important;
-        border-radius: 8px;
-        overflow: visible !important;
-        break-inside: avoid;
-      }
-      .day-col-header {
-        background: #0A2647 !important;
-        padding: 6px 10px !important;
-      }
-      .day-col-name { color: #C9A84C !important; font-size: 0.85rem !important; font-weight: 700 !important; }
-      .day-col-date-num { font-size: 1.2rem !important; color: white !important; font-weight: 900 !important; }
-      .day-col-date { font-size: 0.7rem !important; color: #CBD5E1 !important; }
-      .day-holidays-area {
-        background: #FFF8E7 !important;
-        border-bottom: 1px solid #F59E0B !important;
-      }
-      .holiday-pill {
-        background: #F59E0B !important;
-        color: #000 !important;
-        font-size: 0.75rem !important;
-        font-weight: 700 !important;
-        padding: 3px 8px !important;
-        border-radius: 4px !important;
-      }
-      .tasks-area { padding: 6px !important; gap: 4px !important; overflow: visible !important; }
-      .task-card {
-        border-radius: 5px !important;
-        padding: 5px 8px !important;
-        break-inside: avoid;
-        border: 1px solid #94a3b8 !important;
-        border-right-width: 5px !important;
-        border-right-color: #334155 !important;
-        background: #ffffff !important;
-        box-shadow: none !important;
-      }
-      .task-title { font-size: 0.8rem !important; font-weight: 700 !important; color: #0f172a !important; line-height: 1.25 !important; }
-      .task-desc { font-size: 0.68rem !important; color: #334155 !important; margin-top: 1px !important; }
-      .task-actions, .add-task-btn, .day-footer, .done-btn, .notdone-btn { display: none !important; }
-      .drag-handle { display: none !important; }
-      .empty-state { display: none !important; }
-
-      /* Task status must be readable in black & white — clear text marker, no ambiguous strikethrough */
-      .task-card.done, .task-card.not-done { background: #ffffff !important; opacity: 1 !important; }
-      .task-card.done .task-title, .task-card.not-done .task-title { text-decoration: none !important; color: #0f172a !important; }
-      .task-card.done { border-right-color: #166534 !important; }
-      .task-card.not-done { border-right-color: #991b1b !important; }
-      .task-card.done .task-title::before {
-        content: "\2713 \05D1\05D5\05E6\05E2  ";
-        font-weight: 800; color: #166534;
-      }
-      .task-card.not-done .task-title::before {
-        content: "\2717 \05DC\05D0 \05D1\05D5\05E6\05E2  ";
-        font-weight: 800; color: #991b1b;
-      }
-
-      /* Schedule (לו"ז) is screen-only — hidden from printouts */
-      .schedule-section-label, .schedule-item { display: none !important; }
-
-      /* Event pills — hide edit/delete controls and make B&W friendly */
-      .delete-event-btn { display: none !important; }
-      .event-pill {
-        background: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #94a3b8 !important;
-        border-right: 3px solid #334155 !important;
-        border-radius: 4px !important;
-        font-size: 0.68rem !important;
-        font-weight: 700 !important;
-      }
-
-      /* ── Monthly print styles ── */
-      body.print-monthly .month-view {
-        box-shadow: none !important;
-        border-radius: 0 !important;
-      }
-      body.print-monthly .month-view-header {
-        background: #0A2647 !important;
-      }
-      body.print-monthly .month-cell {
-        min-height: 100px !important;
-        padding: 5px 6px !important;
-        cursor: default !important;
-        break-inside: avoid;
-      }
-      body.print-monthly .month-cell.other-month { opacity: 0.3; }
-      body.print-monthly .month-cell.today {
-        background: rgba(10,38,71,0.08) !important;
-        outline: 2px solid #0A2647 !important;
-      }
-      body.print-monthly .month-cell.weekend-cell {
-        background: #FFF5F5 !important;
-      }
-      body.print-monthly .cell-day-num { font-size: 0.9rem !important; font-weight: 700 !important; margin-bottom: 3px !important; }
-      body.print-monthly .cell-task-chip {
-        font-size: 0.7rem !important;
-        font-weight: 600 !important;
-        padding: 2px 5px !important;
-        margin-bottom: 2px !important;
-        display: block !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      body.print-monthly .cell-holiday,
-      body.print-monthly .cell-event {
-        font-size: 0.65rem !important;
-        padding: 1px 4px !important;
-      }
-      body.print-monthly .cell-more { font-size: 0.68rem !important; color: #64748B; }
-      body.print-monthly .cell-add-btn { display: none !important; }
-
-      /* Footer line */
-      #print-footer {
-        display: block !important;
-        text-align: center;
-        font-size: 0.65rem;
-        color: #94A3B8;
-        margin-top: 8px;
-        border-top: 1px solid #E2E8F0;
-        padding-top: 4px;
-      }
-    }
-
     /* ======================== RESPONSIVE ======================== */
     @media(max-width: 768px) {
       header { padding: 0; }
@@ -1680,6 +1515,170 @@
     .unit-card img { width: 64px; height: 64px; object-fit: contain; }
     .unit-card span { font-size: 0.82rem; font-weight: 700; color: #0A2647; text-align: center; }
   </style>
+  <style id="print-css" media="print">
+
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      #app-header, #toast-container, .modal-overlay, #update-banner { display: none !important; }
+      body { background: white !important; font-family: 'Arial Hebrew', Arial, sans-serif; font-size: 13px; }
+      #main-content { padding: 0; }
+
+      /* Default (weekly): hide month/year */
+      .month-view, .year-view { display: none !important; }
+      /* Monthly mode: hide week, show month */
+      body.print-monthly .week-view,
+      body.print-monthly .mobile-week-view { display: none !important; }
+      body.print-monthly .month-view { display: block !important; }
+
+      /* Print header */
+      #print-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 14px;
+        background: #0A2647 !important;
+        color: white;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      .print-header-logos { display: flex; align-items: center; gap: 10px; }
+      .print-header-logos img { height: 38px; width: auto; }
+      .print-header-title { text-align: center; flex: 1; }
+      .print-header-title h2 { color: #C9A84C !important; font-size: 1.2rem; font-weight: 800; margin: 0; }
+      .print-header-title p { color: #CBD5E1 !important; font-size: 0.82rem; margin: 3px 0 0; }
+      .print-header-date { display: none !important; }
+
+      /* Week grid */
+      .week-view {
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr) !important;
+        align-items: start !important;
+        gap: 6px;
+      }
+      .day-column {
+        min-height: auto;
+        border: 2px solid #0A2647 !important;
+        border-radius: 8px;
+        overflow: visible !important;
+        break-inside: avoid;
+      }
+      .day-col-header {
+        background: #0A2647 !important;
+        padding: 6px 10px !important;
+      }
+      .day-col-name { color: #C9A84C !important; font-size: 0.85rem !important; font-weight: 700 !important; }
+      .day-col-date-num { font-size: 1.2rem !important; color: white !important; font-weight: 900 !important; }
+      .day-col-date { font-size: 0.7rem !important; color: #CBD5E1 !important; }
+      .day-holidays-area {
+        background: #FFF8E7 !important;
+        border-bottom: 1px solid #F59E0B !important;
+      }
+      .holiday-pill {
+        background: #F59E0B !important;
+        color: #000 !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        padding: 3px 8px !important;
+        border-radius: 4px !important;
+      }
+      .tasks-area { padding: 6px !important; gap: 4px !important; overflow: visible !important; }
+      .task-card {
+        border-radius: 5px !important;
+        padding: 5px 8px !important;
+        break-inside: avoid;
+        border: 1px solid #94a3b8 !important;
+        border-right-width: 5px !important;
+        border-right-color: #334155 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+      }
+      .task-title { font-size: 0.8rem !important; font-weight: 700 !important; color: #0f172a !important; line-height: 1.25 !important; }
+      .task-desc { font-size: 0.68rem !important; color: #334155 !important; margin-top: 1px !important; }
+      .task-actions, .add-task-btn, .day-footer, .done-btn, .notdone-btn { display: none !important; }
+      .drag-handle { display: none !important; }
+      .empty-state { display: none !important; }
+
+      /* Task status must be readable in black & white — clear text marker, no ambiguous strikethrough */
+      .task-card.done, .task-card.not-done { background: #ffffff !important; opacity: 1 !important; }
+      .task-card.done .task-title, .task-card.not-done .task-title { text-decoration: none !important; color: #0f172a !important; }
+      .task-card.done { border-right-color: #166534 !important; }
+      .task-card.not-done { border-right-color: #991b1b !important; }
+      .task-card.done .task-title::before {
+        content: "\2713 \05D1\05D5\05E6\05E2  ";
+        font-weight: 800; color: #166534;
+      }
+      .task-card.not-done .task-title::before {
+        content: "\2717 \05DC\05D0 \05D1\05D5\05E6\05E2  ";
+        font-weight: 800; color: #991b1b;
+      }
+
+      /* Schedule (לו"ז) is screen-only — hidden from printouts */
+      .schedule-section-label, .schedule-item { display: none !important; }
+
+      /* Event pills — hide edit/delete controls and make B&W friendly */
+      .delete-event-btn { display: none !important; }
+      .event-pill {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #94a3b8 !important;
+        border-right: 3px solid #334155 !important;
+        border-radius: 4px !important;
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+      }
+
+      /* ── Monthly print styles ── */
+      body.print-monthly .month-view {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+      body.print-monthly .month-view-header {
+        background: #0A2647 !important;
+      }
+      body.print-monthly .month-cell {
+        min-height: 100px !important;
+        padding: 5px 6px !important;
+        cursor: default !important;
+        break-inside: avoid;
+      }
+      body.print-monthly .month-cell.other-month { opacity: 0.3; }
+      body.print-monthly .month-cell.today {
+        background: rgba(10,38,71,0.08) !important;
+        outline: 2px solid #0A2647 !important;
+      }
+      body.print-monthly .month-cell.weekend-cell {
+        background: #FFF5F5 !important;
+      }
+      body.print-monthly .cell-day-num { font-size: 0.9rem !important; font-weight: 700 !important; margin-bottom: 3px !important; }
+      body.print-monthly .cell-task-chip {
+        font-size: 0.7rem !important;
+        font-weight: 600 !important;
+        padding: 2px 5px !important;
+        margin-bottom: 2px !important;
+        display: block !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      body.print-monthly .cell-holiday,
+      body.print-monthly .cell-event {
+        font-size: 0.65rem !important;
+        padding: 1px 4px !important;
+      }
+      body.print-monthly .cell-more { font-size: 0.68rem !important; color: #64748B; }
+      body.print-monthly .cell-add-btn { display: none !important; }
+
+      /* Footer line */
+      #print-footer {
+        display: block !important;
+        text-align: center;
+        font-size: 0.65rem;
+        color: #94A3B8;
+        margin-top: 8px;
+        border-top: 1px solid #E2E8F0;
+        padding-top: 4px;
+      }
+  </style>
 </head>
 <body>
 
@@ -1912,6 +1911,10 @@
           <button onclick="printWeekly()" style="display:flex;align-items:center;gap:10px;padding:11px 16px;width:100%;border:none;background:none;cursor:pointer;font-size:0.85rem;color:#0A2647;font-weight:700;font-family:inherit;direction:rtl;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='none'">📅 הדפסה שבועית</button>
           <div style="height:1px;background:#E2E8F0;margin:0 12px;"></div>
           <button onclick="printMonthly()" style="display:flex;align-items:center;gap:10px;padding:11px 16px;width:100%;border:none;background:none;cursor:pointer;font-size:0.85rem;color:#0A2647;font-weight:700;font-family:inherit;direction:rtl;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='none'">📆 הדפסה חודשית</button>
+          <div style="height:1px;background:#E2E8F0;margin:0 12px;"></div>
+          <button onclick="exportPDF('week')" style="display:flex;align-items:center;gap:10px;padding:11px 16px;width:100%;border:none;background:none;cursor:pointer;font-size:0.85rem;color:#0A2647;font-weight:700;font-family:inherit;direction:rtl;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='none'">📄 שמור PDF שבועי</button>
+          <div style="height:1px;background:#E2E8F0;margin:0 12px;"></div>
+          <button onclick="exportPDF('month')" style="display:flex;align-items:center;gap:10px;padding:11px 16px;width:100%;border:none;background:none;cursor:pointer;font-size:0.85rem;color:#0A2647;font-weight:700;font-family:inherit;direction:rtl;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='none'">📄 שמור PDF חודשי</button>
         </div>
       </div>
       <button class="action-btn" id="btn-sync" title="סנכרון">
@@ -2316,6 +2319,7 @@ let state = {
   notesTab: 'personal',
   notesFilter: 'all',
   showSearch: false,
+  forceDesktopLayout: false,
 };
 
 // ============================================================
@@ -2760,6 +2764,116 @@ function printMonthly() {
   setPrintFooter();
   document.body.classList.add('print-monthly');
   setTimeout(() => { window.print(); document.body.classList.remove('print-monthly'); }, 200);
+}
+
+// ============================================================
+// PDF EXPORT
+// ============================================================
+async function exportPDF(mode) {
+  const menu = document.getElementById('print-menu');
+  if(menu) menu.style.display = 'none';
+
+  const printCss = document.getElementById('print-css');
+  let wrapper = null;
+  const prevForceDesktop = state.forceDesktopLayout;
+
+  try {
+    showLoading(true);
+
+    let fileName;
+    if(mode === 'week') {
+      if(state.view !== 'week') state.view = 'week';
+      state.forceDesktopLayout = true;
+      render();
+      const days = getWeekDays(state.weekStart);
+      const first = days[0], last = days[4];
+      const periodStr = `${first.getDate()} ${HEB_MONTHS[first.getMonth()]} – ${last.getDate()} ${HEB_MONTHS[last.getMonth()]} ${last.getFullYear()}`;
+      document.getElementById('print-title-label').textContent = 'תוכנית עבודה שבועית';
+      document.getElementById('print-period-label').textContent = periodStr;
+      document.getElementById('print-date-label').textContent = `הופק: ${formatDate(new Date())}`;
+      setPrintFooter();
+      document.body.classList.remove('print-monthly');
+      fileName = `workplan_week_${formatDate(first)}.pdf`;
+    } else {
+      if(state.view !== 'month') state.view = 'month';
+      render();
+      const monthName = `${HEB_MONTHS[state.month]} ${state.year}`;
+      document.getElementById('print-title-label').textContent = 'תוכנית עבודה חודשית';
+      document.getElementById('print-period-label').textContent = monthName;
+      document.getElementById('print-date-label').textContent = `הופק: ${formatDate(new Date())}`;
+      setPrintFooter();
+      document.body.classList.add('print-monthly');
+      const mm = String(state.month + 1).padStart(2, '0');
+      fileName = `workplan_month_${state.year}-${mm}.pdf`;
+    }
+
+    if(typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+      throw new Error('PDF libraries not loaded');
+    }
+
+    // Build an offscreen capture wrapper from clones — never touches the live DOM
+    wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:fixed;left:-10000px;top:0;width:1123px;background:#fff;padding:16px;';
+    const printHeaderClone = document.getElementById('print-header').cloneNode(true);
+    const viewContainerClone = document.getElementById('view-container').cloneNode(true);
+    const printFooterClone = document.getElementById('print-footer').cloneNode(true);
+    wrapper.appendChild(printHeaderClone);
+    wrapper.appendChild(viewContainerClone);
+    wrapper.appendChild(printFooterClone);
+    document.body.appendChild(wrapper);
+
+    if(printCss) printCss.media = 'all';
+    await new Promise(r => setTimeout(r, 250));
+
+    const canvas = await html2canvas(wrapper, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      windowWidth: 1200,
+      useCORS: true,
+      logging: false
+    });
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageW = 297, pageH = 210, margin = 8;
+    const maxW = pageW - margin * 2;
+    const maxH = pageH - margin * 2;
+    let imgW = maxW;
+    let imgH = (canvas.height * imgW) / canvas.width;
+    if(imgH > maxH) {
+      imgH = maxH;
+      imgW = (canvas.width * imgH) / canvas.height;
+    }
+    const x = (pageW - imgW) / 2;
+    const y = margin;
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', x, y, imgW, imgH);
+
+    const blob = pdf.output('blob');
+    try {
+      const file = new File([blob], fileName, { type: 'application/pdf' });
+      if(navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: fileName });
+      } else {
+        pdf.save(fileName);
+      }
+    } catch(shareErr) {
+      if(shareErr && shareErr.name === 'AbortError') {
+        // user cancelled the share sheet — do nothing
+      } else {
+        pdf.save(fileName);
+      }
+    }
+  } catch(err) {
+    console.error('exportPDF failed:', err);
+    showToast('שגיאה ביצירת PDF', 'error');
+  } finally {
+    if(printCss) printCss.media = 'print';
+    if(wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+    state.forceDesktopLayout = prevForceDesktop;
+    document.body.classList.remove('print-monthly');
+    render();
+    showLoading(false);
+  }
 }
 
 function deleteEvent(id) {
@@ -4484,7 +4598,7 @@ function switchTab(tabName) {
 // ============================================================
 // NAVIGATION
 // ============================================================
-function isMobile() { return window.innerWidth <= 768; }
+function isMobile() { return !state.forceDesktopLayout && window.innerWidth <= 768; }
 
 function navigate(dir) {
   if(state.view==='year') state.year += dir;
@@ -4737,6 +4851,10 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 </script>
 
+<!-- PDF export libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -4749,7 +4867,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── בדיקת גרסה כל 5 דקות ──
-const CURRENT_VERSION = '20260611-16';
+const CURRENT_VERSION = '20260611-17';
 
 function checkForUpdate() {
   fetch('https://naors23.github.io/workplan916/version.json?t=' + Date.now(), { cache: 'no-store' })
