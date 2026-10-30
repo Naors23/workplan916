@@ -2498,7 +2498,8 @@ function nextWorkday(date) {
     const dow = d.getDay();
     const dk = formatDate(d);
     const isWeekend = dow === 5 || dow === 6;
-    const isHoliday = !!(state.holidays[dk] && state.holidays[dk].length);
+    // Christian/Muslim holidays and Rosh Chodesh are not days off in Israel
+    const isHoliday = (state.holidays[dk] || []).some(n => !/^(✝️|☪️)/.test(n) && !/ראש חודש|ר["״']ח/.test(n));
     if(!isWeekend && !isHoliday) return d;
     d.setDate(d.getDate() + 1);
   }
